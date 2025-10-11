@@ -111,8 +111,7 @@ Procesos2526/
 
 ☁️ Despliegue en Google Cloud Run
 El proyecto está desplegado públicamente en Google Cloud Run.
-URL del servicio:
-  https://procesos2526-817150573239.europe-west1.run.app
+URL del servicio: https://procesos2526-817150573239.europe-west1.run.app
 
 Despliegue manual:
 1. Inicia sesión y configura tu proyecto:
