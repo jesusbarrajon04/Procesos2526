@@ -3,9 +3,56 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nombre por definir</title>
-    <script src="./modelo.js"></script>
+    <title>Gestión de Usuarios</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css"
+    />
   </head>
+
   <body>
+    <div class="container mt-4">
+      <h2 class="mb-4">Gestión de usuarios</h2>
+
+      <div id="au"></div>
+
+      <h5 class="mt-4">Salida:</h5>
+      <pre id="salida"></pre>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="clienteRest.js"></script>
+    <script src="controlWeb.js"></script>
+
+    <script>
+      function mostrarSalida(text) {
+        let salida;
+        if (typeof text === "object") {
+          try {
+            salida = JSON.stringify(text, null, 2);
+          } catch (e) {
+            salida = String(text);
+          }
+        } else {
+          salida = String(text);
+        }
+
+        const now = new Date().toLocaleTimeString();
+        const linea = `[${now}] ${salida}\n`;
+        const $sal = $("#salida");
+        $sal.append(linea);
+        $sal.scrollTop($sal[0].scrollHeight);
+        console.log(salida);
+      }
+
+
+      var rest = new ClienteRest();
+      var cw = new ControlWeb();
+      cw.mostrarAgregarUsuario();
+    </script>
   </body>
 </html>

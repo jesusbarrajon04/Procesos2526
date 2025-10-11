@@ -1,0 +1,25 @@
+{
+  "name": "procesos2526",
+  "version": "1.0.0",
+  "description": "Proyecto SaaS para la asignatura de Procesos de Ingeniería del Software",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "testW": "node_modules\\.bin\\jasmine-node servidor",
+    "test": "./node_modules/.bin/jasmine-node servidor"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesusbarrajon04/Procesos2526.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jesusbarrajon04/Procesos2526/issues"
+  },
+  "homepage": "https://github.com/jesusbarrajon04/Procesos2526#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "jasmine-node": "^1.16.0"
+  }
+}
