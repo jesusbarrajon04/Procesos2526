@@ -109,11 +109,11 @@ Procesos2526/
 4. Abrir en el navegador:
   http://localhost:3000/cliente/index.html
 
-☁️ Despliegue en Google Cloud Run
+## ☁️ Despliegue en Google Cloud Run
 El proyecto está desplegado públicamente en Google Cloud Run.
 URL del servicio: https://procesos2526-817150573239.europe-west1.run.app
 
-Despliegue manual:
+### Despliegue manual:
 1. Inicia sesión y configura tu proyecto:
    gcloud init
 2. Despliega el servicio:
@@ -125,14 +125,14 @@ Despliegue manual:
    - Permitir invocaciones no autenticadas: Y
 4. Acceda con la URL que se genera para el SaaS
 
-Pruebas unitarias
+## Pruebas unitarias
 Las pruebas se ejecutan con Jasmine, verificando el correcto funcionamiento de los métodos del modelo (Sistema y Usuario).
 Ejecutar pruebas desde la raíz del proyecto: npm run testW
 
-Autor
+## Autor
 Jesús
 🎓 Estudiante de Ingeniería Informática – Universidad de Castilla-La Mancha (UCLM)
 Curso académico: 2025 / 2026
 
-Licencia
+## Licencia
 Este proyecto se distribuye bajo la licencia MIT.
