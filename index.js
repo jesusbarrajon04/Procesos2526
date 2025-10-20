@@ -1,18 +1,26 @@
+const path = require("path");
 const fs = require("fs");
 const express = require("express");
 const app = express();
 const modelo = require("./servidor/modelo.js");
 const PORT = process.env.PORT || 3000;
 
-
-app.use(express.static(__dirname + "/"));
-
 let sistema = new modelo.Sistema();
+
+/*
+app.use(express.static(__dirname + "cliente"));
 
 app.get("/", function (request, response) {
   var contenido = fs.readFileSync(__dirname + "/cliente/index.html");
   response.setHeader("Content-Type", "text/html");
   response.send(contenido);
+});
+
+*/
+app.use(express.static(path.join(__dirname, "cliente")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "cliente", "index.html"));
 });
 
 app.get("/agregarUsuario/:nick",function(request,response){
