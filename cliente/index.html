@@ -3,32 +3,122 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gestión de Usuarios</title>
+    <title>Procesos2526</title>
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css"
-    />
-  </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css"/>
+    
+    <style>
+    :root {
+      --azul-oscuro: #0d3b66;
+      --azul-medio: #1e6091;
+      --azul-claro: #61a5c2;
+      --gris-claro: #f5f6fa;
+    }
+    body {
+      background-color: var(--gris-claro);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar {
+      background: linear-gradient(90deg, var(--azul-oscuro), var(--azul-medio));
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: #fff !important;
+      letter-spacing: 0.5px;
+    }
+    .nav-link {
+      color: #dbe9f6 !important;
+      margin-right: 1rem;
+      transition: color 0.2s ease;
+    }
+    .nav-link:hover {
+      color: #fff !important;
+    }
+    .container {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    h2, h3 {
+      color: var(--azul-oscuro);
+    }
+    pre {
+      background-color: #e9f1f7;
+      border-radius: 6px;
+      padding: 1rem;
+      color: #0d3b66;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      min-height: 100px;
+    }
+  </style>
+</head>
+
 
   <body>
+    <!-- <div id="g_id_onload"
+      data-client_id="YOUR_GOOGLE_CLIENT_ID"
+      data-login_uri=https://url/oneTap/callback
+      data-skip_prompt_cookie="nick"
+    ></div> 
+
+    <div id="g_id_onload"
+      data-client_id="817150573239-cuh0jcfurue2dgt6qk04leuca4ph83pb.apps.googleusercontent.com"
+    ></nav> -->
+
+    <div
+      id="g_id_onload"
+      data-client_id="817150573239-cuh0jcfurue2dgt6qk04leuca4ph83pb.apps.googleusercontent.com"
+      data-login_uri="http://localhost:3000/oneTap/callback"
+      data-skip_prompt_cookie="nick"
+    ></div>
+
+    <nav class="navbar navbar-dark px-4">
+      <a class="navbar-brand" href="#">SaaS Procesos</a>
+
+      <ul class="navbar-nav flex-row ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Documentación</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Soporte</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-warning fw-semibold" href="#" onclick="cw.salir(); return false;">Salir</a>
+        </li>
+      </ul>
+    </nav>
+
     <div class="container mt-4">
       <h2 class="mb-4">Gestión de usuarios</h2>
+      <h3>SaaS Procesos</h3>
 
       <div id="au"></div>
-
+      <div id="registro"></div>
+      
       <h5 class="mt-4">Salida:</h5>
       <pre id="salida"></pre>
-    </div>
 
+    </div>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script src="clienteRest.js"></script>
     <script src="controlWeb.js"></script>
 
-    <script>
+    
+    <script>  
       function mostrarSalida(text) {
         let salida;
         if (typeof text === "object") {
@@ -48,11 +138,10 @@
         $sal.scrollTop($sal[0].scrollHeight);
         console.log(salida);
       }
-
-
-      var rest = new ClienteRest();
       var cw = new ControlWeb();
-      cw.mostrarAgregarUsuario();
+      var rest = new ClienteRest(cw);
+      // cw.mostrarAgregarUsuario();
+      cw.comprobarSesion();
     </script>
   </body>
 </html>
