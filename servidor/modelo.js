@@ -9,7 +9,6 @@ function Sistema(test) {
 
   let sistema = this;
 
-  // Solo conectar a MongoDB si no es modo test
   if (!test || !test.test) {
     this.cad.conectar(function(db) {
       console.log("Sistema conectado a Mongo Atlas");
@@ -42,11 +41,7 @@ function Sistema(test) {
 
   this.confirmarUsuario = function (obj, callback) {
     let modelo = this;
-    this.cad.buscarUsuario({
-      "email": obj.email, 
-      "confirmada": false, 
-      "key": obj.key
-    }, function(usr) {
+    this.cad.buscarUsuario({"email": obj.email, "confirmada": false, "key": obj.key}, function(usr) {
       if (usr) {
         usr.confirmada = true;
         modelo.cad.actualizarUsuario(usr, function (res) {
@@ -60,10 +55,7 @@ function Sistema(test) {
 
   this.loginUsuario = function (obj, callback) {
     let modelo = this;
-    this.cad.buscarUsuario({ 
-      email: obj.email,
-      "confirmada": true 
-    }, function (usr) {
+    this.cad.buscarUsuario({email: obj.email,"confirmada": true}, function (usr) {
       if (!usr) {
         callback({ "email": -1 });
       } else {
@@ -83,7 +75,7 @@ function Sistema(test) {
     let modelo = this;
     this.cad.buscarOCrearUsuario(usr, function (obj) {
       callback(obj);
-      modelo.agregarUsuario(obj.email);
+      modelo.agregarUsuario(obj.email);  /// AQUI
     });
   };
 

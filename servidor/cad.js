@@ -36,7 +36,8 @@ function CAD() {
   this.conectar = async function(callback) {
     try {
       let cad = this;
-      let client = new mongo("mongodb+srv://jesus:Procesos2526@cluster0.pmubedt.mongodb.net/?appName=Cluster0");
+      let stringConexion = process.env.CONEXION_STRING;
+      let client = new mongo(stringConexion);
       await client.connect();
       console.log("Conectado a Mongo Atlas...");
       
@@ -53,7 +54,6 @@ function CAD() {
   this.actualizarUsuario = function (obj, callback) {
     actualizar(this.usuarios, obj, callback);
   }
-
 
   function buscarOCrear(coleccion, criterio, callback) {
   coleccion.findOneAndUpdate(criterio,{ $set: criterio },

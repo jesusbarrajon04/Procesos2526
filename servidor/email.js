@@ -1,12 +1,12 @@
 const Brevo = require('@getbrevo/brevo');
 let emailAPI = new Brevo.TransactionalEmailsApi();
 emailAPI.authentications.apiKey.apiKey = process.env.BREVO_API_KEY;
-const urlConfirmar = process.env.urlConfirmar;
+const urlConfirmar = process.env.URL_CONFIRMAR;
 
 module.exports.enviarEmail = async function (direccion, key, mensaje) {
     let message = new Brevo.SendSmtpEmail();
     message.subject = mensaje;
-    message.textContent = "Hello world!";
+    message.textContent = "Hola mundo!";
     message.htmlContent= '<p>Bienvenido a Sistema</p><p><a href="'+urlConfirmar+'confirmarUsuario/'+direccion+'/'+key+'">Pulsa aquí para confirmar cuenta</a></p>'
     message.sender = { name: "JFBL", email: "jesusfbarrajon@gmail.com" };
     message.to = [{ email: direccion, name: direccion }];

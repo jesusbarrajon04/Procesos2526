@@ -1,18 +1,23 @@
 <div id="fmLogin">
-    <form>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" placeholder="Introduce email" id="email">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Iniciar sesión</h5>
+            <form>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" placeholder="Introduce tu email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Contraseña:</label>
+                    <input type="password" class="form-control" placeholder="Introduce tu contraseña" id="pwd" required>
+                </div>
+                <button type="submit" id="btnLogin" class="btn btn-primary">Iniciar sesión</button>
+                <button type="button" id="btnRegistro" class="btn btn-secondary ml-2">Registrarse</button>
+                <button type="button" id="btnRegistroNick" class="btn btn-secondary ml-2">Agregar usuario por Nick</button>
+                <hr class="my-4">
+                
+                <div id="btnGS" class="text-center"></div>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="pwd">Password:</label>
-            <input type="password" class="form-control" placeholder="Introduce password" id="pwd">
-        </div>
-        <button type="submit" id="btnLogin" class="btn btn-primary">Iniciar sesión</button>
-        <button type="button" id="btnRegistro" class="btn btn-secondary ml-2">Registrarse</button>
-        
-    </form>
-    <div class="text-center">
-        <p class="mb-2">O inicia sesión con:</p></div>
-        <p><div id="btnGS"></div></p>
+    </div>
 </div>
