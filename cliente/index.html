@@ -38,7 +38,7 @@
   .nav-link:hover {
     color: #fff !important;
   }
-  .container-fluid {
+  .container {
     max-width: 1200px;
     background-color: #fff;
     border-radius: 12px;
@@ -78,7 +78,7 @@
 
     <ul class="navbar-nav flex-row ms-auto">
       <li class="nav-item">
-        <a class="nav-link" href="#"onclick="cw.mostrarLogin(); return false;">Inicio</a>
+        <a class="nav-link" href="#" onclick="cw.mostrarLogin(); return false;">Inicio</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Documentación</a>
@@ -103,13 +103,34 @@
     <pre id="salida"></pre>
   </div>
 
+  <button type="button" class="btn btn-primary d-none" id="btnModal" data-toggle="modal" data-target="#miModal">Abrir Modal</button>
+  <div class="modal" id="miModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Aviso</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body" id="mBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js" integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
   
   <script src="clienteRest.js"></script>
   <script src="controlWeb.js"></script>
+  <script src="clienteWS.js"></script>
 
   <script>
     function mostrarSalida(text) {
@@ -132,11 +153,27 @@
       console.log(salida);
     }
 
-    const rest = new ClienteRest();
-    const cw = new ControlWeb();
+    let rest, cw, ws;
+    
+    function ini() {
+      console.log("=== INICIALIZANDO APLICACIÓN ===");
+      
+      cw = new ControlWeb();
+      rest = new ClienteRest();
+      ws = new ClienteWS();
+      
+      console.log("✓ ControlWeb creado");
+      console.log("✓ ClienteRest creado");
+      console.log("✓ ClienteWS creado");
+      
+      cw.comprobarSesion();
+      
+      console.log("=== APLICACIÓN LISTA ===");
+    }
     
     $(document).ready(function() {
-      cw.comprobarSesion();
+      console.log("DOM listo, iniciando aplicación...");
+      ini();
     });
   </script>
 </body>

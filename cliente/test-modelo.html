@@ -1,0 +1,62 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Modelo - Partidas</title>
+  <script src="./modelo.js"></script>
+</head>
+<body>
+  <h1>Test del Modelo de Partidas</h1>
+  <p>Abre la consola del navegador (F12) para interactuar</p>
+  
+  <h3>Comandos disponibles:</h3>
+  <pre>
+// Ver el sistema
+sistema
+
+// Crear usuarios
+sistema.agregarUsuario("pepe@pepe.es")
+sistema.agregarUsuario("luis@luis.es")
+sistema.agregarUsuario("ana@ana.es")
+
+// Ver usuarios
+sistema.usuarios
+
+// Crear partida
+codigo1 = sistema.crearPartida("pepe@pepe.es")
+
+// Ver partidas
+sistema.partidas
+
+// Ver partidas disponibles
+sistema.obtenerPartidasDisponibles()
+
+// Unir a partida
+sistema.unirAPartida("luis@luis.es", codigo1)
+
+// Ver jugadores de la partida
+sistema.partidas[codigo1].jugadores
+
+// Intentar unir un tercero (debería fallar - partida llena)
+sistema.unirAPartida("ana@ana.es", codigo1)
+
+// Crear otra partida
+codigo2 = sistema.crearPartida("ana@ana.es")
+
+// Ver todas las partidas disponibles
+sistema.obtenerPartidasDisponibles()
+  </pre>
+
+  <script>
+    var sistema = new Sistema();
+    
+    sistema.agregarUsuario("pepe@pepe.es");
+    sistema.agregarUsuario("luis@luis.es");
+    sistema.agregarUsuario("ana@ana.es");
+    
+    console.log("=== SISTEMA INICIALIZADO ===");
+    console.log("3 usuarios creados: pepe@pepe.es, luis@luis.es, ana@ana.es");
+    console.log("Usa los comandos mostrados en la página para probar");
+    console.log("Sistema:", sistema);
+  </script>
+</body>
+</html>

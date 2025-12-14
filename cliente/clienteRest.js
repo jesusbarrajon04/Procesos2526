@@ -16,7 +16,7 @@ function ClienteRest() {
                 } else {
                     console.log("El email ya está registrado");
                     mostrarSalida("Error: El email ya está registrado");
-                    alert("Este email ya está registrado");
+                    cw.mostrarModal("No se ha podido registrar el usuario. El email ya está en uso.");
                 }
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -38,11 +38,12 @@ function ClienteRest() {
                 if (data.nick && data.nick != -1) {
                     console.log("Usuario " + data.nick + " ha iniciado sesión");
                     $.cookie("nick", data.nick);
+                    
+                    if (typeof ws !== 'undefined') {
+                        ws.email = data.nick;
+                    }
+                    
                     mostrarSalida("Inicio de sesión exitoso");
-
-                    //cw.limpiar();
-                    //cw.mostrarHome(data.nick);
-                    //cw.mostrarLogin();
 
                     setTimeout(function() {
                         location.reload();
@@ -50,7 +51,7 @@ function ClienteRest() {
                 } else {
                     console.log("Usuario o clave incorrectos");
                     mostrarSalida("Credenciales incorrectas");
-                    alert("Email o contraseña incorrectos");
+                    cw.mostrarModal("No se ha podido iniciar sesión. Comprueba tu email y contraseña.");
                 }
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -75,6 +76,11 @@ function ClienteRest() {
             if (data.nick != -1) {
                 console.log("Usuario " + nick + " ha sido registrado");
                 $.cookie("nick", data.nick);
+                
+                if (typeof ws !== 'undefined') {
+                    ws.email = data.nick;
+                }
+                
                 mostrarSalida("Usuario agregado: " + nick);
                 cw.mostrarHome(nick);
             } else {

@@ -10,6 +10,10 @@ const bodyParser = require("body-parser");
 const LocalStrategy = require('passport-local').Strategy;
 const modelo = require("./servidor/modelo.js");
 const PORT = process.env.PORT || 3000;
+const httpServer = require('http').Server(app);
+const { Server } = require("socket.io");
+const io = new Server(httpServer);
+const moduloWS = require("./servidor/servidorWS.js");
 
 app.use(express.static(path.join(__dirname, "cliente")));
 
@@ -189,7 +193,30 @@ app.get("/usuarioActivo/:nick", function (request, response) {
     response.send({ "activo": res });
 });
 
-app.listen(PORT, () => {
+app.get("/obtenerLogs", haIniciado, function(request, response) {
+    sistema.cad.obtenerLogs({}, function(logs) {
+        response.send(logs);
+    });
+});
+
+app.get("/obtenerLogs/:tipo", haIniciado, function(request, response) {
+    let tipo = request.params.tipo;
+    sistema.cad.obtenerLogs({ tipoOperacion: tipo }, function(logs) {
+        response.send(logs);
+    });
+});
+
+app.get("/obtenerLogsUsuario/:email", haIniciado, function(request, response) {
+    let email = request.params.email;
+    sistema.cad.obtenerLogs({ usuario: email }, function(logs) {
+        response.send(logs);
+    });
+});
+
+let ws = new moduloWS.ServidorWS();
+ws.lanzarServidor(io, sistema);
+
+httpServer.listen(PORT, () => {
     console.log(`App está escuchando en el puerto ${PORT}`);
     console.log('Ctrl+C para salir');
 });
