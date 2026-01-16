@@ -1,13 +1,18 @@
+<!-- cliente/index.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Procesos2526</title>
+  <title>Cafetería Universitaria - ESII</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.min.css"/>
-  
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="stylesheet" href="/settings-modal.css">
+  <link rel="stylesheet" href="/styles.css">
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>  
+  <script src="/settings.js"></script>
+  <script src="/sounds.js"></script>
   
   <style>
   :root {
@@ -15,6 +20,8 @@
     --azul-medio: #1e6091;
     --azul-claro: #61a5c2;
     --gris-claro: #f5f6fa;
+    --verde: #77A159;
+    --rojo: #EE1D32;
   }
   body {
     background-color: var(--gris-claro);
@@ -38,6 +45,31 @@
   .nav-link:hover {
     color: #fff !important;
   }
+  
+  .nav-settings-icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.1);
+    margin-left: 1rem;
+  }
+  
+  .nav-settings-icon:hover {
+    transform: rotate(90deg);
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .nav-settings-icon img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0) invert(1);
+  }
+  
   .container {
     max-width: 1200px;
     background-color: #fff;
@@ -61,6 +93,8 @@
     overflow-y: auto;
   }
   </style>
+  
+  <link rel="stylesheet" href="chat.css">
 </head>
 
 <body>
@@ -74,32 +108,34 @@
   ></div>
     
   <nav class="navbar navbar-dark px-4">
-    <a class="navbar-brand" href="#">SaaS Procesos</a>
+    <a class="navbar-brand" href="#" data-i18n="welcome_title">🍽️ Cafetería Universitaria</a>
 
     <ul class="navbar-nav flex-row ms-auto">
       <li class="nav-item">
-        <a class="nav-link" href="#" onclick="cw.mostrarLogin(); return false;">Inicio</a>
+        <a class="nav-link" href="#" onclick="cw.comprobarSesion(); return false;" data-i18n="nav_home">Inicio</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Documentación</a>
+        <a class="nav-link" href="/sobre-nosotros.html" data-i18n="nav_about">Sobre nosotros</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Soporte</a>
+        <a class="nav-link text-warning fw-semibold" href="#" onclick="cw.salir(); return false;" data-i18n="nav_logout">Salir</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-warning fw-semibold" href="#" onclick="cw.salir(); return false;">Salir</a>
+        <div class="nav-settings-icon" id="nav-settings-icon">
+          <img src="/assets/ajustes_icono.png" alt="Ajustes">
+        </div>
       </li>
     </ul>
   </nav>
 
   <div class="container mt-4">
-    <h3>Gestión de usuarios</h3>
-    <p>SaaS Procesos - Curso 2025-2026</p>
+    <h3 data-i18n="page_title">Sistema de Cafetería Universitaria</h3>
+    <p data-i18n="page_subtitle">Gestión de pedidos, reservas y grupos - Curso 2025-2026</p>
     
     <div id="au"></div>
     <div id="registro"></div>
 
-    <h5 class="mt-4">Salida:</h5>
+    <h5 class="mt-4" data-i18n="output_title">Salida:</h5>
     <pre id="salida"></pre>
   </div>
 
@@ -108,24 +144,21 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Aviso</h4>
+          <h4 class="modal-title" data-i18n="modal_title">Aviso</h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body" id="mBody"></div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal" data-i18n="modal_close">Cerrar</button>
         </div>
       </div>
     </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
   
   <script src="clienteRest.js"></script>
@@ -176,5 +209,147 @@
       ini();
     });
   </script>
+
+  <!-- MODAL DE CONFIGURACIÓN -->
+  <div class="settings-modal" id="settings-modal">
+    <div class="settings-content">
+      <div class="settings-header">
+        <h2 data-i18n="settings_title">Opciones</h2>
+        <button class="settings-close" id="settings-close">×</button>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-header">
+          <span class="settings-option-title" data-i18n="enable_daltonism">Habilitar daltonismo</span>
+          <div class="toggle-switch" id="toggle-daltonism">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-title" data-i18n="change_language">Cambiar idioma</div>
+        <div class="language-selector">
+          <div class="language-option" data-lang="es">
+            <img src="/assets/bandera_es.png" class="language-flag" alt="Español">
+            <span class="language-name" data-i18n="language_spanish">Español</span>
+          </div>
+          <div class="language-option" data-lang="en">
+            <img src="/assets/bandera_en.png" class="language-flag" alt="English">
+            <span class="language-name" data-i18n="language_english">Inglés</span>
+          </div>
+          <div class="language-option" data-lang="fr">
+            <img src="/assets/bandera_fr.png" class="language-flag" alt="Français">
+            <span class="language-name" data-i18n="language_french">Francés</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="settings-apply-btn" id="settings-apply" data-i18n="btn_apply">Aplicar</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Widget de configuración en el navbar
+      const navSettingsIcon = document.getElementById('nav-settings-icon');
+      const settingsModal = document.getElementById('settings-modal');
+      const settingsClose = document.getElementById('settings-close');
+      const settingsApply = document.getElementById('settings-apply');
+      
+      let tempSettings = AppSettings.load();
+      
+      function loadSettingsUI() {
+        const settings = AppSettings.load();
+        tempSettings = { ...settings };
+
+        const toggle = document.getElementById('toggle-daltonism');
+        if (toggle) {
+          if (settings.daltonismo) {
+            toggle.classList.add('active');
+          } else {
+            toggle.classList.remove('active');
+          }
+        }
+
+        document.querySelectorAll('.language-option').forEach(opt => {
+          opt.classList.remove('selected');
+          if (opt.dataset.lang === settings.idioma) {
+            opt.classList.add('selected');
+          }
+        });
+      }
+      
+      if (navSettingsIcon) {
+        navSettingsIcon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (settingsModal) {
+            settingsModal.classList.add('active');
+            loadSettingsUI();
+          }
+        });
+      }
+      
+      if (settingsClose) {
+        settingsClose.addEventListener('click', () => {
+          if (settingsModal) {
+            settingsModal.classList.remove('active');
+          }
+        });
+      }
+      
+      if (settingsModal) {
+        settingsModal.addEventListener('click', (e) => {
+          if (e.target.id === 'settings-modal') {
+            settingsModal.classList.remove('active');
+          }
+        });
+      }
+      
+      const toggleDaltonism = document.getElementById('toggle-daltonism');
+      if (toggleDaltonism) {
+        toggleDaltonism.addEventListener('click', (e) => {
+          e.currentTarget.classList.toggle('active');
+          tempSettings.daltonismo = e.currentTarget.classList.contains('active');
+        });
+      }
+      
+      document.querySelectorAll('.language-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.language-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          tempSettings.idioma = opt.dataset.lang;
+        });
+      });
+      
+      if (settingsApply) {
+        settingsApply.addEventListener('click', () => {
+          const previousSettings = AppSettings.load();
+          AppSettings.save(tempSettings);
+          if (settingsModal) {
+            settingsModal.classList.remove('active');
+          }
+          
+          const message = AppSettings.t('settings_applied', tempSettings.idioma);
+          
+          if (typeof showAlert === 'function') {
+            showAlert('success', message);
+          } else {
+            alert(message);
+          }
+          
+          if (previousSettings.idioma !== tempSettings.idioma) {
+            setTimeout(() => {
+              location.reload();
+            }, 1500);
+          }
+        });
+      }
+      
+      // Cargar configuración inicial
+      loadSettingsUI();
+    });
+  </script>
+
 </body>
 </html>

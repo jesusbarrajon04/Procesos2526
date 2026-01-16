@@ -1,0 +1,520 @@
+<!-- cliente/resumen-pedido.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resumen del Pedido - Cafetería ESII</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #77A159;
+      --primary-dark: #5a8244;
+      --secondary: #667eea;
+      --success: #4CAF50;
+      --text: #333;
+      --text-light: #666;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--secondary) 0%, #764ba2 100%);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .summary-container {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 600px;
+      margin: 20px auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Header */
+    .header-section {
+      text-align: center;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 24px;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--success), #45a049);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      animation: scaleIn 0.5s ease-out 0.2s both;
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      background: var(--success);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      animation: slideIn 0.5s ease-out 0.4s both;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Order Info */
+    .order-info-section {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 15px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-value {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Items */
+    .items-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-card {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-name {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .item-desc {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-bottom: 6px;
+    }
+
+    .item-quantity {
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .item-price {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Total */
+    .total-section {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .total-row:last-child {
+      margin-bottom: 0;
+      padding-top: 12px;
+      border-top: 2px solid rgba(255, 255, 255, 0.3);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    /* QR Badge */
+    .qr-badge {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #856404;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .qr-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 14px;
+      width: 100%;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(119, 161, 89, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .summary-container {
+        padding: 24px 20px;
+        margin: 10px;
+      }
+
+      .title {
+        font-size: 24px;
+      }
+
+      .item-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .item-price {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="summary-container">
+    <div class="header-section">
+      <div class="success-icon">✓</div>
+      <h1 class="title">¡Pedido Confirmado!</h1>
+      <p class="subtitle">Cafetería Universitaria ESII</p>
+      <div class="status-badge">En preparación</div>
+    </div>
+    
+    <div id="qr-notice"></div>
+    
+    <div id="order-content">
+      <!-- El contenido se cargará dinámicamente -->
+    </div>
+  </div>
+
+  <script>
+    // 🎯 OBTENER DATOS DEL PEDIDO
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedData = urlParams.get('data');
+    const orderId = urlParams.get('order');
+
+    function loadOrderDetails() {
+      // Intentar cargar desde parámetro data (QR)
+      if (encodedData) {
+        try {
+          const decodedData = decodeURIComponent(escape(atob(encodedData)));
+          const orderData = JSON.parse(decodedData);
+          renderOrder(orderData, true);
+          return;
+        } catch (e) {
+          console.error('Error al decodificar datos del QR:', e);
+        }
+      }
+
+      // Cargar desde orderId
+      if (!orderId) {
+        showEmptyState('No se especificó un pedido');
+        return;
+      }
+
+      // Intentar cargar desde localStorage
+      const orderDataStr = localStorage.getItem('order_' + orderId);
+
+      if (orderDataStr) {
+        try {
+          const orderData = JSON.parse(orderDataStr);
+          renderOrder(orderData, false);
+        } catch (e) {
+          console.error('Error al parsear datos del pedido:', e);
+          showEmptyState('Error al cargar el pedido');
+        }
+      } else {
+        // Crear datos de ejemplo si no existe
+        const mockOrder = {
+          orderId: orderId,
+          date: new Date().toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          total: localStorage.getItem('last_order_total') || '5.10',
+          items: JSON.parse(localStorage.getItem('order_items') || '[]'),
+          method: 'Efectivo'
+        };
+
+        if (mockOrder.items.length === 0) {
+          mockOrder.items = [
+            {
+              title: 'Bocadillo de jamón',
+              desc: 'Pan, jamón, tomate',
+              price: 4.50,
+              qty: 1
+            }
+          ];
+          mockOrder.total = '4.50';
+        }
+
+        renderOrder(mockOrder, false);
+      }
+    }
+
+    function renderOrder(orderData, fromQR) {
+      // Mostrar badge de QR si aplica
+      if (fromQR) {
+        document.getElementById('qr-notice').innerHTML = `
+          <div class="qr-badge">
+            <span class="qr-icon">📱</span>
+            <span>Has accedido mediante código QR</span>
+          </div>
+        `;
+      }
+
+      // Calcular subtotal
+      let subtotal = 0;
+      orderData.items.forEach(item => {
+        subtotal += item.price * item.qty;
+      });
+
+      const container = document.getElementById('order-content');
+
+      container.innerHTML = `
+        <!-- Información del pedido -->
+        <div class="order-info-section">
+          <div class="info-row">
+            <span class="info-label">
+              <span>📋</span>
+              <span>Número de Pedido</span>
+            </span>
+            <span class="info-value">${orderData.orderId}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">
+              <span>📅</span>
+              <span>Fecha</span>
+            </span>
+            <span class="info-value">${orderData.date}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">
+              <span>💳</span>
+              <span>Método de pago</span>
+            </span>
+            <span class="info-value">${orderData.method || 'Efectivo'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">
+              <span>⏰</span>
+              <span>Estado</span>
+            </span>
+            <span class="info-value" style="color: #4CAF50;">En preparación</span>
+          </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="items-section">
+          <h2 class="section-title">
+            <span>🛍️</span>
+            <span>Productos</span>
+          </h2>
+          ${orderData.items.map(item => `
+            <div class="item-card">
+              <div class="item-info">
+                <div class="item-name">${item.title}</div>
+                <div class="item-desc">${item.desc || 'Producto de cafetería'}</div>
+                <div class="item-quantity">Cantidad: ${item.qty}</div>
+              </div>
+              <div class="item-price">${(item.price * item.qty).toFixed(2)} €</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Total -->
+        <div class="total-section">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <span>${subtotal.toFixed(2)} €</span>
+          </div>
+          <div class="total-row">
+            <span>Total</span>
+            <span>${orderData.total} €</span>
+          </div>
+        </div>
+
+        <!-- Botón volver -->
+        <button class="btn-primary" onclick="window.location.href='/'">
+          <span>🏠</span>
+          <span>Volver al inicio</span>
+        </button>
+      `;
+    }
+
+    function showEmptyState(message) {
+      document.getElementById('qr-notice').innerHTML = '';
+      const container = document.getElementById('order-content');
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          <h3 class="empty-title">${message}</h3>
+          <p>No se pudieron cargar los detalles del pedido</p>
+          <button class="btn-primary" onclick="window.location.href='/'" style="margin-top: 24px;">
+            <span>🏠</span>
+            <span>Ir al inicio</span>
+          </button>
+        </div>
+      `;
+    }
+
+    // 🎯 INICIALIZACIÓN
+    (function init() {
+      loadOrderDetails();
+    })();
+  </script>
+
+</body>
+</html>

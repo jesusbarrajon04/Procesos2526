@@ -1,0 +1,1578 @@
+<!-- cliente/carrito.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrito - Cafetería ESII</title>
+  
+  <!-- Estilos y Scripts necesarios -->
+  <link rel="stylesheet" href="/settings-modal.css">
+  <link rel="stylesheet" href="/reserva-mesas.css">
+  <script src="/reserva-mesas.js"></script>
+  <script src="/settings.js"></script>
+  <script src="/sounds.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #77A159;
+      --primary-dark: #5a8244;
+      --secondary: #667eea;
+      --danger: #EE1D32;
+      --text: #333;
+      --text-light: #666;
+      --bg: #f5f6fa;
+      --white: #fff;
+      --success: #4CAF50;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 16px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-home, .btn-back {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-home:hover, .btn-back:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .header-logo {
+      width: 40px;
+      height: 40px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .settings-icon-header {
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .settings-icon-header:hover {
+      transform: rotate(90deg);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .settings-icon-header img {
+      width: 26px;
+      height: 26px;
+      filter: brightness(0) invert(1);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      color: var(--text-light);
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    .cart-items {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item:hover {
+      background: #f9f9f9;
+      border-radius: 12px;
+    }
+
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+      flex-shrink: 0;
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .item-desc {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .item-price {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f5f5f5;
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: white;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qty-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .qty-value {
+      min-width: 32px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .btn-remove {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: #ffe0e0;
+      color: var(--danger);
+      font-size: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-remove:hover {
+      background: var(--danger);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .cart-summary {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .summary-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 15px;
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+      padding-top: 16px;
+      margin-top: 8px;
+      border-top: 2px solid #f0f0f0;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .summary-label {
+      color: var(--text-light);
+    }
+
+    .summary-value {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .summary-total {
+      color: var(--primary);
+    }
+
+    .order-options {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .options-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .option-buttons {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid #e0e0e0;
+      padding: 18px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+      background: #f0f9f0;
+      transform: translateY(-2px);
+    }
+
+    .option-btn img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .payment-section {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .payment-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .payment-options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .payment-option {
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .payment-option:hover {
+      border-color: var(--primary);
+      background: #f9fff9;
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary);
+      background: #f0f9f0;
+    }
+
+    .payment-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .payment-info {
+      flex: 1;
+    }
+
+    .payment-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+    }
+
+    .payment-desc {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    .payment-radio {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .payment-option.selected .payment-radio {
+      border-color: var(--primary);
+    }
+
+    .payment-option.selected .payment-radio::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 18px;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(119, 161, 89, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--danger);
+      border: 2px solid var(--danger);
+    }
+
+    .btn-secondary:hover {
+      background: var(--danger);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-light);
+      border: 2px solid #e0e0e0;
+    }
+
+    .btn-ghost:hover {
+      background: #f5f5f5;
+      border-color: var(--text-light);
+    }
+
+    .empty-state {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .empty-text {
+      color: var(--text-light);
+      margin-bottom: 24px;
+    }
+
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .loading-content {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .payment-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .payment-modal.active {
+      display: flex;
+    }
+
+    .payment-modal-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      animation: slideUp 0.3s ease-out;
+      margin: 20px;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 30px;
+      color: #999;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .modal-close:hover {
+      color: #333;
+    }
+
+    .modal-header {
+      padding: 30px 30px 20px;
+      text-align: center;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-header img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .modal-body {
+      padding: 30px;
+    }
+
+    .card-form label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .card-form input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    .card-form input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #f9fff9;
+    }
+
+    .required {
+      color: #c00;
+      margin-left: 4px;
+    }
+
+    .bizum-container {
+      background: linear-gradient(135deg, #00B2E3 0%, #0099CC 100%);
+      border-radius: 15px;
+      padding: 30px;
+      color: white;
+      text-align: center;
+    }
+
+    .bizum-amount {
+      font-size: 42px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .bizum-phone {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 18px;
+    }
+
+    .paypal-container {
+      border: 2px solid #0070BA;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .paypal-amount {
+      font-size: 38px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: #0070BA;
+    }
+
+    .paypal-account {
+      background: #F5F7FA;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modal-btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .modal-btn-bizum {
+      background: white;
+      color: #0099CC;
+    }
+
+    .modal-btn-bizum:hover {
+      background: #f0f9ff;
+    }
+
+    .modal-btn-paypal {
+      background: #0070BA;
+      color: white;
+    }
+
+    .modal-btn-paypal:hover {
+      background: #005ea6;
+    }
+
+    /* ALERTAS */
+    .alert {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      z-index: 10001;
+      animation: slideInAlert 0.3s ease-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    @keyframes slideInAlert {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-left {
+        gap: 8px;
+      }
+
+      .btn-home, .btn-back {
+        padding: 8px 14px;
+        font-size: 14px;
+      }
+
+      .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .item-image {
+        width: 100%;
+        height: 180px;
+      }
+
+      .item-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .payment-modal-content {
+        width: 95%;
+        margin: 10px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <button class="btn-home" onclick="goHome()">
+        🏠 <span data-i18n="btn_home">Inicio</span>
+      </button>
+      <button class="btn-back" onclick="goBack()">
+        ← <span data-i18n="btn_back">Volver</span>
+      </button>
+      <div class="header-title">
+        <img src="/assets/carrito.png" class="header-logo" alt="carrito">
+        <span data-i18n="cart_title">Tu Carrito</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="settings-icon-header" id="settings-icon-header">
+        <img src="/assets/ajustes_icono.png" alt="Ajustes">
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1 class="page-title" data-i18n="cart_summary">Resumen de tu pedido</h1>
+    <p class="page-subtitle" data-i18n="cart_subtitle">Revisa y confirma tu pedido</p>
+
+    <div id="cart-content"></div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p style="font-size: 18px; font-weight: 600; color: #333;" data-i18n="loading_order">Procesando pedido...</p>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIGURACIÓN -->
+  <div class="settings-modal" id="settings-modal">
+    <div class="settings-content">
+      <div class="settings-header">
+        <h2 data-i18n="settings_title">Opciones</h2>
+        <button class="settings-close" id="settings-close">×</button>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-header">
+          <span class="settings-option-title" data-i18n="enable_daltonism">Habilitar daltonismo</span>
+          <div class="toggle-switch" id="toggle-daltonism">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-title" data-i18n="change_language">Cambiar idioma</div>
+        <div class="language-selector">
+          <div class="language-option" data-lang="es">
+            <img src="/assets/bandera_es.png" class="language-flag" alt="Español">
+            <span class="language-name" data-i18n="language_spanish">Español</span>
+          </div>
+          <div class="language-option" data-lang="en">
+            <img src="/assets/bandera_en.png" class="language-flag" alt="English">
+            <span class="language-name" data-i18n="language_english">Inglés</span>
+          </div>
+          <div class="language-option" data-lang="fr">
+            <img src="/assets/bandera_fr.png" class="language-flag" alt="Français">
+            <span class="language-name" data-i18n="language_french">Francés</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="settings-apply-btn" id="settings-apply" data-i18n="btn_apply">Aplicar</button>
+    </div>
+  </div>
+
+  <!-- MODAL TARJETA -->
+  <div class="payment-modal" id="modal-tarjeta">
+    <div class="payment-modal-content">
+      <button class="modal-close" onclick="closePaymentModal('tarjeta')">×</button>
+      <div class="modal-header">
+        <img src="/assets/tarjeta_icono.png" alt="Tarjeta">
+        <h2 data-i18n="payment_card_title">Pago con Tarjeta</h2>
+      </div>
+      <div class="modal-body">
+        <form class="card-form" id="form-tarjeta">
+          <label data-i18n="card_number">Número de tarjeta</label> <span class="required">*</span></label>
+          <input type="text" id="numero-tarjeta" data-i18n="card_number_placeholder" placeholder="1234 5678 9012 3456" maxlength="19" required>
+
+          <label data-i18n="expiry_date">Fecha de caducidad (MM/YY)</label> <span class="required">*</span></label>
+          <input type="text" id="fecha-caducidad" placeholder="MM/YY" maxlength="5" required>
+
+          <label data-i18n="cvv_label">CVV</label> <span class="required">*</span></label>
+          <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+
+          <button type="submit" class="modal-btn modal-btn-primary" data-i18n="btn_confirm_payment">Confirmar Pago</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL BIZUM -->
+  <div class="payment-modal" id="modal-bizum">
+    <div class="payment-modal-content">
+      <button class="modal-close" onclick="closePaymentModal('bizum')">×</button>
+      <div class="modal-header">
+        <img src="/assets/bizum_icono.png" alt="Bizum">
+        <h2 data-i18n="payment_bizum_title">Pago con Bizum</h2>
+      </div>
+      <div class="modal-body">
+        <div class="bizum-container">
+          <div class="bizum-amount" id="bizum-amount">0.00 €</div>
+          <div class="bizum-phone">📱 <span data-i18n="bizum_phone">Teléfono</span>: ••• ••• 789</div>
+          <p style="font-size: 14px; opacity: 0.9; margin: 15px 0;" data-i18n="bizum_notification">
+            Recibirás una notificación en tu móvil para autorizar el pago
+          </p>
+          <button class="modal-btn modal-btn-bizum" onclick="procesarPagoBizum()" data-i18n="btn_confirm_payment">Confirmar Pago</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PAYPAL -->
+  <div class="payment-modal" id="modal-paypal">
+    <div class="payment-modal-content">
+      <button class="modal-close" onclick="closePaymentModal('paypal')">×</button>
+      <div class="modal-header">
+        <img src="/assets/paypal_icono.png" alt="PayPal" style="width: 120px;">
+        <h2 data-i18n="payment_paypal_title">Pago con PayPal</h2>
+      </div>
+      <div class="modal-body">
+        <div class="paypal-container">
+          <div class="paypal-amount" id="paypal-amount">0.00 €</div>
+          <div class="paypal-account">📧 usuario@email.com</div>
+          <p style="font-size: 13px; color: #666; margin: 15px 0;" data-i18n="paypal_charge">
+            El cargo se realizará en tu cuenta de PayPal
+          </p>
+          <button class="modal-btn modal-btn-paypal" onclick="procesarPagoPayPal()" data-i18n="btn_confirm_payment">Confirmar Pago</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CART_KEY = 'caf_cart';
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    let selectedPayment = 'Efectivo';
+    let tempSettings = AppSettings.load();
+
+    const productImages = {
+      'bocadillo de jamón': '/assets/bocadillo-jamon2.jpg',
+      'bocadillo vegetal': '/assets/bocadillo-vegetal2.jpg',
+      'bocadillo de lomo': '/assets/bocadillo-lomo.jpg',
+      'bocadillo de calamares': '/assets/bocadillo-calamares.jpg',
+      'café solo': '/assets/cafe-solo2.jpg',
+      'café con leche': '/assets/cafe-leche2.jpg',
+      'tortilla': '/assets/tortilla2.jpg',
+      'ensalada': '/assets/ensalada2.jpg',
+      'coca-cola': '/assets/coca-cola.jpg',
+      'coca-cola zero': '/assets/coca-cola-zero.jpg',
+      'fanta naranja': '/assets/fanta-naranja.jpg',
+      'fanta limón': '/assets/fanta-limon.jpg',
+      'agua mineral': '/assets/agua-mineral.jpg',
+      'cerveza': '/assets/cerveza.jpg',
+      'zumo de naranja': '/assets/zumo-naranja.jpg',
+      'default': '/assets/bocadillo-jamon.jpg'
+    };
+
+    function getProductImage(title) {
+      const normalized = title.toLowerCase();
+      for (const [key, url] of Object.entries(productImages)) {
+        if (normalized.includes(key)) return url;
+      }
+      return productImages.default;
+    }
+
+    // NAVEGACIÓN
+    function goHome() {
+      window.location.href = '/';
+    }
+
+    function goBack() {
+      window.location.href = '/menu-productos.html';
+    }
+
+    // RENDERIZAR CARRITO
+    function renderCart() {
+      const container = document.getElementById('cart-content');
+      const settings = AppSettings.load();
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <h2 class="empty-title" data-i18n="cart_empty">${AppSettings.t('cart_empty')}</h2>
+            <p class="empty-text" data-i18n="cart_empty_text">${AppSettings.t('cart_empty_text')}</p>
+            <button class="btn btn-primary" onclick="window.location.href='/menu-productos.html'">
+              🍽️ <span data-i18n="btn_see_menu">${AppSettings.t('btn_see_menu')}</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const total = subtotal;
+
+      container.innerHTML = `
+        <div class="cart-items">
+          ${cart.map((item, index) => {
+            const imageUrl = item.image || getProductImage(item.title);
+            const translatedTitle = AppSettings.translateProduct(item.title);
+            const translatedDesc = AppSettings.translateProduct(item.desc || 'Producto de cafetería');
+            
+            return `
+              <div class="cart-item">
+                <img src="${imageUrl}" alt="${translatedTitle}" class="item-image"
+                     onerror="this.style.background='linear-gradient(135deg, #ffeaa7, #fdcb6e)'; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23ffeaa7%22 width=%22200%22 height=%22200%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2260%22%3E🍽️%3C/text%3E%3C/svg%3E'">
+                <div class="item-info">
+                  <div class="item-title">${translatedTitle}</div>
+                  <div class="item-desc">${translatedDesc}</div>
+                  <div class="item-price">${item.price.toFixed(2)} € × ${item.qty}</div>
+                </div>
+                <div class="item-controls">
+                  <div class="qty-control">
+                    <button class="qty-btn" onclick="decreaseQty(${index})">−</button>
+                    <span class="qty-value">${item.qty}</span>
+                    <button class="qty-btn" onclick="increaseQty(${index})">+</button>
+                  </div>
+                  <button class="btn-remove" onclick="removeItem(${index})" title="${AppSettings.t('btn_remove')}">🗑️</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="order-options">
+          <h3 class="options-title">📍 <span data-i18n="order_type">${AppSettings.t('order_type')}</span></h3>
+          <div class="option-buttons">
+            <button class="option-btn" onclick="ReservaMesas.abrirModal()">
+              <img src="/assets/mesas_reserva.png" alt="mesa">
+              <span data-i18n="eat_here">${AppSettings.t('eat_here')}</span>
+            </button>
+          </div>
+          <div id="reserva-indicator" style="margin-top: 15px; padding: 12px; background: #e8f5e9; border-radius: 10px; display: none; font-size: 14px; font-weight: 600; color: #2e7d32;"></div>
+        </div>
+
+        <div class="payment-section">
+          <h3 class="payment-title">💳 <span data-i18n="payment_method">${AppSettings.t('payment_method')}</span></h3>
+          <div class="payment-options">
+            <div class="payment-option selected" onclick="selectPayment('Efectivo', this)">
+              <img src="/assets/pedido_icono.png" class="payment-icon" alt="efectivo">
+              <div class="payment-info">
+                <div class="payment-name" data-i18n="payment_cash">${AppSettings.t('payment_cash')}</div>
+                <div class="payment-desc" data-i18n="payment_cash_desc">${AppSettings.t('payment_cash_desc')}</div>
+              </div>
+              <div class="payment-radio"></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('Tarjeta', this)">
+              <img src="/assets/tarjeta_icono.png" class="payment-icon" alt="tarjeta">
+              <div class="payment-info">
+                <div class="payment-name" data-i18n="payment_card">${AppSettings.t('payment_card')}</div>
+                <div class="payment-desc" data-i18n="payment_card_desc">${AppSettings.t('payment_card_desc')}</div>
+              </div>
+              <div class="payment-radio"></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('Bizum', this)">
+              <img src="/assets/bizum_icono.png" class="payment-icon" alt="bizum">
+              <div class="payment-info">
+                <div class="payment-name" data-i18n="payment_bizum">${AppSettings.t('payment_bizum')}</div>
+                <div class="payment-desc" data-i18n="payment_bizum_desc">${AppSettings.t('payment_bizum_desc')}</div>
+              </div>
+              <div class="payment-radio"></div>
+            </div>
+            <div class="payment-option" onclick="selectPayment('PayPal', this)">
+              <img src="/assets/paypal_icono.png" class="payment-icon" alt="paypal">
+              <div class="payment-info">
+                <div class="payment-name" data-i18n="payment_paypal">${AppSettings.t('payment_paypal')}</div>
+                <div class="payment-desc" data-i18n="payment_paypal_desc">${AppSettings.t('payment_paypal_desc')}</div>
+              </div>
+              <div class="payment-radio"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cart-summary">
+          <h3 class="summary-title">📋 <span data-i18n="summary">${AppSettings.t('summary')}</span></h3>
+          <div class="summary-row">
+            <span class="summary-label" data-i18n="subtotal">${AppSettings.t('subtotal')} (${cart.reduce((s, i) => s + i.qty, 0)} ${AppSettings.t('products')})</span>
+            <span class="summary-value">${subtotal.toFixed(2)} €</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label summary-total" data-i18n="cart_total">${AppSettings.t('cart_total')}</span>
+            <span class="summary-value summary-total">${total.toFixed(2)} €</span>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn btn-secondary" onclick="clearCart()">🗑️ <span data-i18n="btn_clear_cart">${AppSettings.t('btn_clear_cart')}</span></button>
+          <button class="btn btn-primary" onclick="confirmOrder()">
+            <img src="/assets/confirmacion_icono.png" style="width:24px;height:24px;" alt="confirmar">
+            <span data-i18n="btn_confirm_order">${AppSettings.t('btn_confirm_order')}</span>
+          </button>
+        </div>
+
+        <button class="btn btn-ghost" onclick="window.location.href='/menu-productos.html'" style="width: 100%; margin-top: 12px;">
+          ← <span data-i18n="btn_continue_shopping">${AppSettings.t('btn_continue_shopping')}</span>
+        </button>
+      `;
+    }
+
+    // CONTROLES DE CANTIDAD
+    function increaseQty(index) {
+      cart[index].qty = (cart[index].qty || 1) + 1;
+      saveAndRender();
+    }
+
+    function decreaseQty(index) {
+      if (cart[index].qty > 1) {
+        cart[index].qty--;
+        saveAndRender();
+      } else {
+        removeItem(index);
+      }
+    }
+
+    function removeItem(index) {
+      const confirmMsg = AppSettings.t('confirm_remove_item') || '¿Eliminar este producto del carrito?';
+      if (confirm(confirmMsg)) {
+        cart.splice(index, 1);
+        saveAndRender();
+        showAlert('success', AppSettings.t('item_removed') || 'Producto eliminado');
+      }
+    }
+
+    function clearCart() {
+      const confirmMsg = AppSettings.t('confirm_clear_cart') || '¿Vaciar todo el carrito?';
+      if (confirm(confirmMsg)) {
+        cart = [];
+        saveAndRender();
+        showAlert('success', AppSettings.t('cart_cleared') || 'Carrito vaciado');
+      }
+    }
+
+    // SELECCIONAR MÉTODO DE PAGO
+    function selectPayment(method, element) {
+      selectedPayment = method;
+      document.querySelectorAll('.payment-option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      element.classList.add('selected');
+    }
+
+    // MODALES DE PAGO
+    function openPaymentModal(method) {
+      const total = calculateTotal();
+      
+      if (method === 'tarjeta') {
+        document.getElementById('modal-tarjeta').classList.add('active');
+      } else if (method === 'bizum') {
+        document.getElementById('bizum-amount').textContent = total.toFixed(2) + ' €';
+        document.getElementById('modal-bizum').classList.add('active');
+      } else if (method === 'paypal') {
+        document.getElementById('paypal-amount').textContent = total.toFixed(2) + ' €';
+        document.getElementById('modal-paypal').classList.add('active');
+      }
+    }
+
+    function closePaymentModal(method) {
+      if (method === 'tarjeta') {
+        document.getElementById('modal-tarjeta').classList.remove('active');
+      } else if (method === 'bizum') {
+        document.getElementById('modal-bizum').classList.remove('active');
+      } else if (method === 'paypal') {
+        document.getElementById('modal-paypal').classList.remove('active');
+      }
+    }
+
+    // FORMATEO DE TARJETA
+    document.getElementById('numero-tarjeta').addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+      let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+      e.target.value = formatted;
+    });
+
+    document.getElementById('fecha-caducidad').addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length >= 2) {
+        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+      }
+      e.target.value = value;
+    });
+
+    document.getElementById('cvv').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // PROCESAR PAGO CON TARJETA
+    document.getElementById('form-tarjeta').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const numeroTarjeta = document.getElementById('numero-tarjeta').value.replace(/\s/g, '');
+      const fechaCaducidad = document.getElementById('fecha-caducidad').value;
+      const cvv = document.getElementById('cvv').value;
+
+      if (!numeroTarjeta || !fechaCaducidad || !cvv) {
+        showAlert('error', AppSettings.t('empty_fields'));
+        return;
+      }
+
+      if (numeroTarjeta.length !== 16) {
+        showAlert('error', AppSettings.t('invalid_card_number') || 'El número de tarjeta debe tener 16 dígitos');
+        return;
+      }
+
+      if (!/^\d{2}\/\d{2}$/.test(fechaCaducidad)) {
+        showAlert('error', AppSettings.t('invalid_date_format') || 'Formato de fecha inválido (MM/YY)');
+        return;
+      }
+
+      const mes = parseInt(fechaCaducidad.split('/')[0]);
+      if (mes < 1 || mes > 12) {
+        showAlert('error', AppSettings.t('invalid_month') || 'Mes inválido (debe ser 01-12)');
+        return;
+      }
+
+      if (cvv.length !== 3) {
+        showAlert('error', AppSettings.t('invalid_cvv') || 'El CVV debe tener 3 dígitos');
+        return;
+      }
+
+      closePaymentModal('tarjeta');
+      await procesarPagoFinal('Tarjeta');
+    });
+
+    // PROCESAR BIZUM
+    async function procesarPagoBizum() {
+      closePaymentModal('bizum');
+      await procesarPagoFinal('Bizum');
+    }
+
+    // PROCESAR PAYPAL
+    async function procesarPagoPayPal() {
+      closePaymentModal('paypal');
+      await procesarPagoFinal('PayPal');
+    }
+
+    // CONFIRMAR PEDIDO
+    async function confirmOrder() {
+      if (cart.length === 0) {
+        showAlert('error', AppSettings.t('empty_cart'));
+        return;
+      }
+
+      if (selectedPayment === 'Tarjeta') {
+        openPaymentModal('tarjeta');
+      } else if (selectedPayment === 'Bizum') {
+        openPaymentModal('bizum');
+      } else if (selectedPayment === 'PayPal') {
+        openPaymentModal('paypal');
+      } else {
+        await procesarPagoFinal('Efectivo');
+      }
+    }
+
+    // PROCESAR PAGO FINAL
+    async function procesarPagoFinal(metodo) {
+      document.getElementById('loading-overlay').classList.add('active');
+
+      try {
+        console.log('Enviando pedido:', { items: cart, method: metodo, type: 'local' });
+
+        const response = await fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: cart,
+            method: metodo,
+            type: 'local'
+          })
+        });
+
+        console.log('Respuesta del servidor:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error del servidor:', errorText);
+          throw new Error('Error en el servidor: ' + response.status);
+        }
+
+        const data = await response.json();
+        console.log('Datos recibidos:', data);
+
+        if (data.ok) {
+          const total = calculateTotal();
+          
+          localStorage.setItem('last_order_total', total.toFixed(2));
+          localStorage.setItem('last_order_method', metodo);
+          localStorage.setItem('order_items', JSON.stringify(cart));
+
+          cart = [];
+          localStorage.setItem(CART_KEY, JSON.stringify(cart));
+
+          showAlert('success', AppSettings.t('payment_successful'));
+          
+          setTimeout(() => {
+            window.location.href = '/pago-confirmacion.html';
+          }, 1500);
+          
+        } else {
+          throw new Error(data.mensaje || 'Error al procesar pedido');
+        }
+      } catch (error) {
+        console.error('Error completo:', error);
+        showAlert('error', AppSettings.t('error_processing'));
+      } finally {
+        document.getElementById('loading-overlay').classList.remove('active');
+      }
+    }
+
+    // UTILIDADES
+    function saveAndRender() {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      renderCart();
+    }
+
+    function calculateTotal() {
+      return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    }
+
+    // CERRAR MODALES AL HACER CLIC FUERA
+    document.querySelectorAll('.payment-modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          const modalId = modal.id.replace('modal-', '');
+          closePaymentModal(modalId);
+        }
+      });
+    });
+
+    // ============ WIDGET DE CONFIGURACIÓN ============
+    function loadSettingsUI() {
+      const settings = AppSettings.load();
+      tempSettings = { ...settings };
+
+      const toggle = document.getElementById('toggle-daltonism');
+      if (settings.daltonismo) {
+        toggle.classList.add('active');
+      } else {
+        toggle.classList.remove('active');
+      }
+
+      document.querySelectorAll('.language-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.lang === settings.idioma) {
+          opt.classList.add('selected');
+        }
+      });
+    }
+
+    document.getElementById('settings-icon-header').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.add('active');
+      loadSettingsUI();
+    });
+
+    document.getElementById('settings-close').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.remove('active');
+    });
+
+    document.getElementById('settings-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'settings-modal') {
+        document.getElementById('settings-modal').classList.remove('active');
+      }
+    });
+
+    document.getElementById('toggle-daltonism').addEventListener('click', (e) => {
+      e.currentTarget.classList.toggle('active');
+      tempSettings.daltonismo = e.currentTarget.classList.contains('active');
+    });
+
+    document.querySelectorAll('.language-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.language-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        tempSettings.idioma = opt.dataset.lang;
+      });
+    });
+
+    document.getElementById('settings-apply').addEventListener('click', () => {
+      const previousSettings = AppSettings.load();
+      AppSettings.save(tempSettings);
+      document.getElementById('settings-modal').classList.remove('active');
+      
+      showAlert('success', AppSettings.t('settings_applied', tempSettings.idioma));
+      
+      if (previousSettings.idioma !== tempSettings.idioma) {
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+      }
+    });
+
+    // INICIALIZACIÓN
+    (function init() {
+      renderCart();
+      loadSettingsUI();
+    })();
+  </script>
+
+      <!-- MODAL DE RESERVA DE MESAS -->
+    <div class="reserva-modal" id="reserva-modal">
+      <div class="reserva-content">
+        <div class="reserva-header">
+          <h2>🪑 <span data-i18n="reserve_table">Reservar Mesa</span></h2>
+          <button class="reserva-close" onclick="ReservaMesas.cerrarModal()">×</button>
+        </div>
+        
+        <div class="reserva-body">
+          <div id="error-reserva" class="error-message"></div>
+          
+          <!-- PASO 1: Datos básicos -->
+          <div class="reserva-step active" id="step-1">
+            <div class="step-title">
+              <span class="step-number">1</span>
+              <span data-i18n="step1_title">Datos de la reserva</span>
+            </div>
+            
+            <div class="form-group-reserva">
+              <label data-i18n="num_people">Número de personas</label>
+              <input type="number" id="num-personas" min="1" max="60" placeholder="Ej: 4">
+            </div>
+            
+            <div class="time-inputs">
+              <div class="form-group-reserva">
+                <label data-i18n="start_time">Hora de inicio</label>
+                <input type="time" id="hora-inicio" value="14:00">
+              </div>
+              
+              <div class="form-group-reserva">
+                <label data-i18n="end_time">Hora de fin</label>
+                <input type="time" id="hora-fin" value="15:00">
+              </div>
+            </div>
+            
+            <div class="reserva-info">
+              <strong data-i18n="info_title">ℹ️ Información:</strong><br>
+              <span data-i18n="info_text">Cada mesa tiene capacidad para 4 personas. El sistema calculará automáticamente el número de mesas necesarias.</span>
+            </div>
+            
+            <div class="reserva-buttons">
+              <button class="btn-reserva btn-reserva-secondary" onclick="ReservaMesas.cerrarModal()">
+                <span data-i18n="btn_cancel">Cancelar</span>
+              </button>
+              <button class="btn-reserva btn-reserva-primary" onclick="ReservaMesas.continuarPaso(1)">
+                <span data-i18n="btn_continue">Continuar</span> →
+              </button>
+            </div>
+          </div>
+          
+          <!-- PASO 2: Selección de mesas -->
+          <div class="reserva-step" id="step-2">
+            <div class="step-title">
+              <span class="step-number">2</span>
+              <span data-i18n="step2_title">Selecciona tus mesas</span>
+            </div>
+            
+            <div class="reserva-info">
+              <strong data-i18n="tables_needed">Mesas necesarias:</strong> <span id="mesas-necesarias">0</span><br>
+              <strong data-i18n="tables_selected">Mesas seleccionadas:</strong> <span id="mesas-seleccionadas-count">0</span>
+            </div>
+            
+            <div class="cafeteria-map" id="mapa-mesas">
+              <!-- Las mesas se generan dinámicamente -->
+            </div>
+            
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-box legend-disponible"></div>
+                <span data-i18n="legend_available">Disponible</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-box legend-seleccionada"></div>
+                <span data-i18n="legend_selected">Seleccionada</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-box legend-ocupada"></div>
+                <span data-i18n="legend_occupied">Ocupada</span>
+              </div>
+            </div>
+            
+            <div class="reserva-buttons">
+              <button class="btn-reserva btn-reserva-secondary" onclick="ReservaMesas.mostrarPaso(1)">
+                ← <span data-i18n="btn_back">Atrás</span>
+              </button>
+              <button class="btn-reserva btn-reserva-primary" id="btn-paso2-continuar" onclick="ReservaMesas.continuarPaso(2)" disabled>
+                <span data-i18n="btn_continue">Continuar</span> →
+              </button>
+            </div>
+          </div>
+          
+          <!-- PASO 3: Confirmación -->
+          <div class="reserva-step" id="step-3">
+            <div class="step-title">
+              <span class="step-number">3</span>
+              <span data-i18n="step3_title">Confirmar reserva</span>
+            </div>
+            
+            <div class="reserva-summary">
+              <div class="summary-row">
+                <span class="summary-label" data-i18n="summary_people">Número de personas:</span>
+                <span class="summary-value" id="resumen-personas">0</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label" data-i18n="summary_time">Horario:</span>
+                <span class="summary-value" id="resumen-hora">-</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label" data-i18n="summary_tables">Mesas:</span>
+                <span class="summary-value" id="resumen-mesas">-</span>
+              </div>
+            </div>
+            
+            <div class="reserva-info">
+              <strong data-i18n="confirm_info_title">✅ Todo listo!</strong><br>
+              <span data-i18n="confirm_info_text">Al confirmar, tus mesas quedarán reservadas. Recuerda llegar puntual.</span>
+            </div>
+            
+            <div class="reserva-buttons">
+              <button class="btn-reserva btn-reserva-secondary" onclick="ReservaMesas.mostrarPaso(2)">
+                ← <span data-i18n="btn_back">Atrás</span>
+              </button>
+              <button class="btn-reserva btn-reserva-primary" id="btn-confirmar-reserva" onclick="ReservaMesas.confirmarReserva()">
+                ✅ <span data-i18n="btn_confirm_reservation">Confirmar Reserva</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</body>
+</html>

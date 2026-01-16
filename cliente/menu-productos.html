@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú - Cafetería ESII</title>
+  
+  <!-- Scripts necesarios -->
+  <link rel="stylesheet" href="/settings-modal.css">
+  <script src="/settings.js"></script>
+  <script src="/sounds.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #77A159;
+      --primary-dark: #5a8244;
+      --secondary: #667eea;
+      --danger: #EE1D32;
+      --text: #333;
+      --text-light: #666;
+      --bg: #f5f6fa;
+      --white: #fff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 100px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 16px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .header-logo {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .settings-icon-header {
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .settings-icon-header:hover {
+      transform: rotate(90deg);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .settings-icon-header img {
+      width: 26px;
+      height: 26px;
+      filter: brightness(0) invert(1);
+    }
+
+    .btn-home {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-home:hover {
+      background: rgba(255,255,255,0.3);
+      transform: scale(1.05);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      color: var(--text-light);
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    #menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      padding: 20px 0;
+    }
+
+    .menu-card {
+      background: var(--white);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.2);
+    }
+
+    .menu-card-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+      cursor: pointer;
+    }
+
+    .menu-card-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .menu-card-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 12px 0;
+      line-height: 1.3;
+    }
+
+    .menu-card-desc {
+      font-size: 15px;
+      color: var(--text-light);
+      line-height: 1.5;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .menu-card-price {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .menu-card-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-add-menu {
+      flex: 1;
+      background: linear-gradient(135deg, var(--danger), #c41628);
+      color: white;
+      border: none;
+      padding: 16px 24px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-add-menu:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 24px rgba(238, 29, 50, 0.4);
+    }
+
+    .btn-view-menu {
+      background: white;
+      color: var(--secondary);
+      border: 2px solid var(--secondary);
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-height: 48px;
+    }
+
+    .btn-view-menu:hover {
+      background: var(--secondary);
+      color: white;
+    }
+
+    .cart-floating-btn {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 90;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 18px 28px;
+      font-size: 18px;
+      font-weight: 700;
+      min-height: 60px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(119, 161, 89, 0.4);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .cart-floating-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 12px 40px rgba(119, 161, 89, 0.5);
+    }
+
+    .cart-icon {
+      font-size: 28px;
+    }
+
+    .cart-badge {
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-image-container {
+      position: relative;
+    }
+
+    .modal-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 24px 24px 0 0;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      transform: scale(1.1);
+      background: #f5f5f5;
+    }
+
+    .modal-body {
+      padding: 28px;
+    }
+
+    .modal-title {
+      font-size: 28px;
+      margin: 0 0 16px 0;
+      color: var(--text);
+    }
+
+    .modal-desc {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    .modal-price {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .modal-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--danger), #c41628);
+      color: white;
+      border: none;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 24px rgba(238, 29, 50, 0.4);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-light);
+    }
+
+    .empty-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    /* ALERTAS */
+    .alert {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      z-index: 10001;
+      animation: slideInAlert 0.3s ease-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+
+    @keyframes slideInAlert {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #menu-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .menu-card-actions {
+        flex-direction: column;
+      }
+
+      .cart-floating-btn {
+        right: 16px;
+        bottom: 16px;
+        padding: 16px 24px;
+        font-size: 16px;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <div class="header-logo">🍽️</div>
+      <span data-i18n="menu_title">Menú de Cafetería</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-home" onclick="goHome()">
+        🏠 <span data-i18n="btn_home">Inicio</span>
+      </button>
+      <div class="settings-icon-header" id="settings-icon-header">
+        <img src="/assets/ajustes_icono.png" alt="Ajustes">
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1 class="page-title" data-i18n="menu_day_title">Menú del día</h1>
+    <p class="page-subtitle" data-i18n="menu_subtitle">Selecciona los productos que deseas pedir</p>
+
+    <div id="menu-grid">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p data-i18n="loading_menu">Cargando menú...</p>
+      </div>
+    </div>
+  </main>
+
+  <button class="cart-floating-btn" onclick="goToCart()">
+    <span class="cart-icon">🛒</span>
+    <span data-i18n="btn_view_cart">Ver carrito</span>
+    <span class="cart-badge" id="cart-count-floating">0</span>
+  </button>
+
+  <div class="modal" id="product-modal">
+    <div class="modal-content">
+      <div class="modal-image-container">
+        <img id="modal-image" class="modal-image" src="" alt="">
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title" id="modal-title"></h2>
+        <p class="modal-desc" id="modal-desc"></p>
+        <div class="modal-price" id="modal-price"></div>
+        <button class="modal-btn" id="modal-add-btn">
+          🛒 <span data-i18n="btn_add_to_cart">Añadir al carrito</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN -->
+  <div class="settings-modal" id="settings-modal">
+    <div class="settings-content">
+      <div class="settings-header">
+        <h2 data-i18n="settings_title">Opciones</h2>
+        <button class="settings-close" id="settings-close">×</button>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-header">
+          <span class="settings-option-title" data-i18n="enable_daltonism">Habilitar daltonismo</span>
+          <div class="toggle-switch" id="toggle-daltonism">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-option">
+        <div class="settings-option-title" data-i18n="change_language">Cambiar idioma</div>
+        <div class="language-selector">
+          <div class="language-option" data-lang="es">
+            <img src="/assets/bandera_es.png" class="language-flag" alt="Español">
+            <span class="language-name" data-i18n="language_spanish">Español</span>
+          </div>
+          <div class="language-option" data-lang="en">
+            <img src="/assets/bandera_en.png" class="language-flag" alt="English">
+            <span class="language-name" data-i18n="language_english">Inglés</span>
+          </div>
+          <div class="language-option" data-lang="fr">
+            <img src="/assets/bandera_fr.png" class="language-flag" alt="Français">
+            <span class="language-name" data-i18n="language_french">Francés</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="settings-apply-btn" id="settings-apply" data-i18n="btn_apply">Aplicar</button>
+    </div>
+  </div>
+
+  <script>
+    // 🎯 CONFIGURACIÓN
+    const CART_KEY = 'caf_cart';
+    let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+    let currentProduct = null;
+
+    // 🎯 MAPEO DE IMÁGENES
+    const productImages = {
+      'bocadillo de jamón': '/assets/bocadillo-jamon2.jpg',
+      'bocadillo vegetal': '/assets/bocadillo-vegetal2.jpg',
+      'bocadillo de lomo': '/assets/bocadillo-lomo.jpg',
+      'bocadillo de calamares': '/assets/bocadillo-calamares.jpg',
+      'café solo': '/assets/cafe-solo2.jpg',
+      'café con leche': '/assets/cafe-leche2.jpg',
+      'tortilla': '/assets/tortilla2.jpg',
+      'ensalada': '/assets/ensalada2.jpg',
+      'coca-cola': '/assets/coca-cola.jpg',
+      'coca-cola zero': '/assets/coca-cola-zero.jpg',
+      'fanta naranja': '/assets/fanta-naranja.jpg',
+      'fanta limón': '/assets/fanta-limon.jpg',
+      'agua mineral': '/assets/agua-mineral.jpg',
+      'cerveza': '/assets/cerveza.jpg',
+      'zumo de naranja': '/assets/zumo-naranja.jpg',
+      'default': '/assets/bocadillo-jamon.jpg'
+    };
+
+    function getProductImage(title) {
+      const normalized = title.toLowerCase();
+      for (const [key, url] of Object.entries(productImages)) {
+        if (normalized.includes(key)) return url;
+      }
+      return productImages.default;
+    }
+
+    // 🎯 NAVEGACIÓN
+    function goHome() {
+      window.location.href = '/';
+    }
+
+    // 🎯 CARGAR MENÚ
+    async function loadMenu() {
+      try {
+        const response = await fetch('/api/menu');
+        const menu = await response.json();
+        
+        if (!menu || menu.length === 0) {
+          showEmptyState();
+          return;
+        }
+
+        renderMenu(menu);
+      } catch (error) {
+        console.error('Error al cargar menú:', error);
+        showError();
+      }
+    }
+
+    // 🎯 RENDERIZAR MENÚ
+    function renderMenu(menu) {
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = '';
+      const settings = AppSettings.load();
+
+      menu.forEach(product => {
+        const imageUrl = product.image || getProductImage(product.title);
+        const translatedTitle = AppSettings.translateProduct(product.title);
+        const translatedDesc = AppSettings.translateProduct(product.desc || 'Delicioso producto de nuestra cafetería');
+        
+        const card = document.createElement('div');
+        card.className = 'menu-card';
+        
+        card.innerHTML = `
+          <img src="${imageUrl}" 
+              alt="${translatedTitle}" 
+              class="menu-card-image"
+              onclick="showProductDetails(${product.id})"
+              onerror="this.style.background='linear-gradient(135deg, #ffeaa7, #fdcb6e)'; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22500%22 height=%22400%22%3E%3Crect fill=%22%23ffeaa7%22 width=%22500%22 height=%22400%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2280%22%3E🍽️%3C/text%3E%3C/svg%3E'">
+          
+          <div class="menu-card-content">
+            <h3 class="menu-card-title">${translatedTitle}</h3>
+            <div class="menu-card-desc">${translatedDesc}</div>
+            <div class="menu-card-price">${product.price.toFixed(2)} €</div>
+            
+            <div class="menu-card-actions">
+              <button class="btn-add-menu" onclick="addToCart(${product.id}, event)">
+                🛒 <span data-i18n="btn_add">${AppSettings.t('btn_add')}</span>
+              </button>
+              <button class="btn-view-menu" onclick="showProductDetails(${product.id})">
+                👁️ <span data-i18n="btn_view">${AppSettings.t('btn_view')}</span>
+              </button>
+            </div>
+          </div>
+        `;
+        
+        grid.appendChild(card);
+      });
+    }
+
+    // 🎯 AÑADIR AL CARRITO
+    async function addToCart(productId, event) {
+      try {
+        const response = await fetch('/api/menu');
+        const menu = await response.json();
+        const product = menu.find(p => p.id === productId);
+        
+        if (!product) {
+          showAlert('error', AppSettings.t('product_not_found') || '❌ Producto no encontrado');
+          return;
+        }
+
+        const existingItem = cart.find(item => item.id === productId);
+        
+        if (existingItem) {
+          existingItem.qty = (existingItem.qty || 1) + 1;
+        } else {
+          cart.push({ ...product, qty: 1 });
+        }
+
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        updateCartCount();
+        
+        const translatedTitle = AppSettings.translateProduct(product.title);
+        const message = AppSettings.t('product_added') || `✅ ${translatedTitle} añadido al carrito`;
+        showAlert('success', message);
+        
+        if (event && event.target) {
+          const btn = event.target.closest('.btn-add-menu');
+          if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '✓ ' + (AppSettings.t('Added') || 'Añadido');
+            btn.style.background = '#4CAF50';
+            
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+              btn.style.background = '';
+            }, 1500);
+          }
+        }
+        
+      } catch (error) {
+        console.error('Error al añadir producto:', error);
+        showAlert('error', AppSettings.t('error_adding_product') || '❌ Error al añadir producto');
+      }
+    }
+
+    // 🎯 MOSTRAR DETALLES DEL PRODUCTO
+    async function showProductDetails(productId) {
+      try {
+        const response = await fetch('/api/menu');
+        const menu = await response.json();
+        const product = menu.find(p => p.id === productId);
+        
+        if (!product) return;
+
+        currentProduct = product;
+        const imageUrl = product.image || getProductImage(product.title);
+        const translatedTitle = AppSettings.translateProduct(product.title);
+        const translatedDesc = AppSettings.translateProduct(product.desc || 'Delicioso producto de nuestra cafetería');
+
+        document.getElementById('modal-image').src = imageUrl;
+        document.getElementById('modal-title').textContent = translatedTitle;
+        document.getElementById('modal-desc').textContent = translatedDesc;
+        document.getElementById('modal-price').textContent = `${product.price.toFixed(2)} €`;
+        
+        document.getElementById('product-modal').classList.add('active');
+      } catch (error) {
+        console.error('Error al cargar detalles:', error);
+      }
+    }
+
+    // 🎯 CERRAR MODAL
+    function closeModal() {
+      document.getElementById('product-modal').classList.remove('active');
+      currentProduct = null;
+    }
+
+    // 🎯 AÑADIR DESDE MODAL
+    document.getElementById('modal-add-btn').addEventListener('click', () => {
+      if (currentProduct) {
+        addToCart(currentProduct.id);
+        closeModal();
+      }
+    });
+
+    document.getElementById('product-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'product-modal') {
+        closeModal();
+      }
+    });
+
+    // 🎯 IR AL CARRITO
+    function goToCart() {
+      window.location.href = '/carrito.html';
+    }
+
+    // 🎯 ACTUALIZAR CONTADOR
+    function updateCartCount() {
+      const count = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+      const floatingCount = document.getElementById('cart-count-floating');
+      if (floatingCount) floatingCount.textContent = count;
+    }
+
+    // 🎯 MOSTRAR ALERTA CON SONIDO
+    function showAlert(type, message) {
+      // Eliminar alertas anteriores
+      const existingAlerts = document.querySelectorAll('.alert');
+      existingAlerts.forEach(alert => alert.remove());
+
+      // Crear nueva alerta
+      const alert = document.createElement('div');
+      alert.className = `alert ${type}`;
+      
+      alert.innerHTML = `
+        <span style="font-size: 24px;">${type === 'success' ? '✓' : '✗'}</span>
+        <span style="font-weight: 600; flex: 1;">${message}</span>
+      `;
+      
+      document.body.appendChild(alert);
+      
+      // Reproducir sonido
+      if (type === 'success') {
+        AppSounds.playConfirm();
+      } else if (type === 'error') {
+        AppSounds.playError();
+      }
+      
+      // Remover después de 3 segundos
+      setTimeout(() => {
+        alert.style.opacity = '0';
+        alert.style.transform = 'translateX(400px)';
+        setTimeout(() => alert.remove(), 300);
+      }, 3000);
+    }
+
+    // 🎯 ESTADOS VACÍOS/ERROR
+    function showEmptyState() {
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🍽️</div>
+          <h3 data-i18n="no_products">${AppSettings.t('no_products') || 'No hay productos disponibles'}</h3>
+          <p data-i18n="come_back_later">${AppSettings.t('come_back_later') || 'Por favor, vuelve más tarde'}</p>
+        </div>
+      `;
+    }
+
+    function showError() {
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <h3 data-i18n="error_loading_menu">${AppSettings.t('error_loading_menu') || 'Error al cargar el menú'}</h3>
+          <p data-i18n="please_reload">${AppSettings.t('please_reload') || 'Por favor, recarga la página'}</p>
+          <button class="btn-add-menu" onclick="location.reload()" style="margin-top: 20px; max-width: 200px; margin-left: auto; margin-right: auto;">
+            🔄 <span data-i18n="btn_reload">${AppSettings.t('btn_reload') || 'Recargar'}</span>
+          </button>
+        </div>
+      `;
+    }
+
+    // ============ WIDGET DE CONFIGURACIÓN ============
+    let tempSettings = AppSettings.load();
+
+    function loadSettingsUI() {
+      const settings = AppSettings.load();
+      tempSettings = { ...settings };
+
+      const toggle = document.getElementById('toggle-daltonism');
+      if (toggle) {
+        if (settings.daltonismo) {
+          toggle.classList.add('active');
+        } else {
+          toggle.classList.remove('active');
+        }
+      }
+
+      document.querySelectorAll('.language-option').forEach(opt => {
+        opt.classList.remove('selected');
+        if (opt.dataset.lang === settings.idioma) {
+          opt.classList.add('selected');
+        }
+      });
+    }
+
+    document.getElementById('settings-icon-header').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.add('active');
+      loadSettingsUI();
+    });
+
+    document.getElementById('settings-close').addEventListener('click', () => {
+      document.getElementById('settings-modal').classList.remove('active');
+    });
+
+    document.getElementById('settings-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'settings-modal') {
+        document.getElementById('settings-modal').classList.remove('active');
+      }
+    });
+
+    document.getElementById('toggle-daltonism').addEventListener('click', (e) => {
+      e.currentTarget.classList.toggle('active');
+      tempSettings.daltonismo = e.currentTarget.classList.contains('active');
+    });
+
+    document.querySelectorAll('.language-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.language-option').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        tempSettings.idioma = opt.dataset.lang;
+      });
+    });
+
+    document.getElementById('settings-apply').addEventListener('click', () => {
+      const previousSettings = AppSettings.load();
+      AppSettings.save(tempSettings);
+      document.getElementById('settings-modal').classList.remove('active');
+      
+      // Mostrar mensaje con sonido
+      const message = AppSettings.t('settings_applied', tempSettings.idioma);
+      showAlert('success', message);
+      
+      // Recargar si cambió el idioma
+      if (previousSettings.idioma !== tempSettings.idioma) {
+        setTimeout(() => location.reload(), 1500);
+      }
+    });
+
+    // 🎯 INICIALIZACIÓN
+    (function init() {
+      updateCartCount();
+      loadMenu();
+      loadSettingsUI();
+    })();
+  </script>
+
+</body>
+</html>

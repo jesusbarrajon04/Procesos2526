@@ -1,0 +1,417 @@
+/* cliente/reserva-mesas.css */
+/* Sistema de reserva de mesas de cafetería */
+
+.reserva-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.reserva-modal.active {
+  display: flex;
+}
+
+.reserva-content {
+  background: white;
+  border-radius: 20px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reserva-header {
+  background: linear-gradient(135deg, #77A159, #5a8244);
+  color: white;
+  padding: 24px 30px;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reserva-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.reserva-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 32px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reserva-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.reserva-body {
+  padding: 30px;
+}
+
+.reserva-step {
+  display: none;
+}
+
+.reserva-step.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.step-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-number {
+  background: #77A159;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.form-group-reserva {
+  margin-bottom: 20px;
+}
+
+.form-group-reserva label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group-reserva input,
+.form-group-reserva select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.form-group-reserva input:focus,
+.form-group-reserva select:focus {
+  outline: none;
+  border-color: #77A159;
+  background: #f9fff9;
+}
+
+.time-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.cafeteria-map {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 30px;
+  margin: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  position: relative;
+}
+
+.cafeteria-map::before {
+  content: '🚪 ENTRADA';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #667eea;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mesa {
+  aspect-ratio: 1;
+  background: white;
+  border: 3px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  position: relative;
+  font-size: 14px;
+}
+
+.mesa:hover:not(.ocupada):not(.disabled) {
+  border-color: #77A159;
+  background: #f0f9f0;
+  transform: scale(1.05);
+}
+
+.mesa.selected {
+  border-color: #77A159;
+  background: linear-gradient(135deg, #77A159, #5a8244);
+  color: white;
+  transform: scale(1.05);
+}
+
+.mesa.ocupada {
+  background: #ffebee;
+  border-color: #ef5350;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.mesa.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mesa-numero {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.mesa-capacidad {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.mesa-estado {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 16px;
+}
+
+.reserva-info {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.reserva-summary {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.summary-value {
+  font-weight: 700;
+  color: #333;
+}
+
+.reserva-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-reserva {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-reserva-primary {
+  background: linear-gradient(135deg, #77A159, #5a8244);
+  color: white;
+}
+
+.btn-reserva-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(119, 161, 89, 0.4);
+}
+
+.btn-reserva-secondary {
+  background: white;
+  color: #666;
+  border: 2px solid #e0e0e0;
+}
+
+.btn-reserva-secondary:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.btn-reserva:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #ffebee;
+  border-left: 4px solid #f44336;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 15px 0;
+  color: #c62828;
+  font-size: 14px;
+  display: none;
+}
+
+.error-message.show {
+  display: block;
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.legend-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid;
+}
+
+.legend-disponible {
+  background: white;
+  border-color: #e0e0e0;
+}
+
+.legend-seleccionada {
+  background: #77A159;
+  border-color: #77A159;
+}
+
+.legend-ocupada {
+  background: #ffebee;
+  border-color: #ef5350;
+}
+
+@media (max-width: 768px) {
+  .reserva-content {
+    margin: 0;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .reserva-header {
+    border-radius: 0;
+  }
+
+  .reserva-body {
+    padding: 20px;
+  }
+
+  .cafeteria-map {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .time-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .reserva-buttons {
+    flex-direction: column;
+  }
+}

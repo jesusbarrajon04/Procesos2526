@@ -1,3 +1,5 @@
+//cliente/clienteRest.js
+
 function ClienteRest() {
     
     this.registrarUsuario = function (email, password) {

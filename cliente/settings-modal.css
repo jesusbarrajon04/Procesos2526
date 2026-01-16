@@ -1,0 +1,324 @@
+/* cliente/settings-modal.css */
+
+/* ==================== MODAL DE CONFIGURACIÓN ==================== */
+
+.settings-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-modal.active {
+  display: flex;
+}
+
+.settings-content {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #eee;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-close:hover {
+  color: #333;
+}
+
+.settings-option {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.settings-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.settings-option-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ==================== TOGGLE SWITCH ==================== */
+
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.toggle-switch.active {
+  background: #77A159;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-slider {
+  transform: translateX(24px);
+}
+
+/* ==================== SELECTOR DE IDIOMA ==================== */
+
+.language-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.language-option:hover {
+  border-color: #77A159;
+  background: #f9fff9;
+}
+
+.language-option.selected {
+  border-color: #77A159;
+  background: #f0f9f0;
+}
+
+.language-flag {
+  width: 30px;
+  height: 20px;
+  margin-right: 12px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.language-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* ==================== BOTÓN APLICAR ==================== */
+
+.settings-apply-btn {
+  width: 100%;
+  padding: 14px;
+  background: #77A159;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s;
+}
+
+.settings-apply-btn:hover {
+  background: #6a9150;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(119, 161, 89, 0.3);
+}
+
+/* ==================== ICONO DE AJUSTES EN HEADER ==================== */
+
+.settings-icon-header {
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.settings-icon-header:hover {
+  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.settings-icon-header img {
+  width: 26px;
+  height: 26px;
+  filter: brightness(0) invert(1);
+}
+
+.header-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ==================== MODO DALTONISMO ==================== */
+
+body.daltonism-mode {
+  --primary: #0066CC;
+  --primary-soft: #B3D9FF;
+  --confirm: #0099CC;
+  --muted: #666666;
+}
+
+body.daltonism-mode .btn-primary {
+  background: linear-gradient(135deg, #0066CC, #0052A3);
+}
+
+body.daltonism-mode .btn-confirm {
+  background: linear-gradient(135deg, #0099CC, #0077A3);
+}
+
+body.daltonism-mode header {
+  background: linear-gradient(135deg, #0066CC, #0052A3);
+}
+
+body.daltonism-mode .alert.error {
+  background: #FFE8D6;
+  color: #8B4000;
+  border-left: 4px solid #FFA500;
+}
+
+body.daltonism-mode .alert.success {
+  background: #D6F0FF;
+  color: #003D5C;
+  border-left: 4px solid #0099CC;
+}
+
+body.daltonism-mode .payment-option.selected {
+  border-color: #0066CC;
+  background: #D6F0FF;
+}
+
+body.daltonism-mode .payment-option.selected .payment-radio {
+  border-color: #0066CC;
+}
+
+body.daltonism-mode .payment-option.selected .payment-radio::after {
+  background: #0066CC;
+}
+
+/* ==================== RESPONSIVE ==================== */
+
+@media (max-width: 700px) {
+  .settings-content {
+    padding: 20px;
+    max-width: 95%;
+    margin: 10px;
+  }
+  
+  .settings-header h2 {
+    font-size: 20px;
+  }
+  
+  .settings-option {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .settings-option-title {
+    font-size: 14px;
+  }
+  
+  .language-selector {
+    gap: 10px;
+  }
+  
+  .language-option {
+    padding: 12px;
+  }
+  
+  .language-flag {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .language-name {
+    font-size: 14px;
+  }
+  
+  .settings-apply-btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+  
+  .settings-icon-header {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .settings-icon-header img {
+    width: 22px;
+    height: 22px;
+  }
+}

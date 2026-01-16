@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 function Sistema(test) {
   this.usuarios = {};
-  this.partidas = {};
+  this.grupos = {}; // Antes "partidas" - Ahora grupos de cafetería
   this.cad = new datos.CAD();
   this.dbConectada = false;
 
@@ -19,6 +19,8 @@ function Sistema(test) {
     });
   }
 
+  // ==================== AUTENTICACIÓN ====================
+  
   this.registrarUsuario = function (obj, callback) {
     let modelo = this;
     if (!obj.nick) {
@@ -102,6 +104,8 @@ function Sistema(test) {
     });
   };
 
+  // ==================== USUARIOS EN MEMORIA ====================
+  
   this.agregarUsuario = function(nick) {
     let res = { "nick": -1 };
     if (!this.usuarios[nick]) {
@@ -144,165 +148,354 @@ function Sistema(test) {
     return { num: Object.keys(this.usuarios).length };
   };
 
-  this.crearPartida = function(email) {
+  // ==================== GRUPOS (antes Partidas) ====================
+  
+  this.crearGrupo = function(email, nombreGrupo, esPrivado) {
     if (!this.usuarios[email]) {
       console.log("Usuario no encontrado:", email);
       return -1;
     }
 
     let codigo = this.obtenerCodigo();
-    let partida = new Partida(codigo);
+    let grupo = new Grupo(codigo, nombreGrupo || "Grupo de cafetería");
     
-    partida.jugadores.push(this.usuarios[email]);
-    partida.estado = "esperando";
+    grupo.miembros.push(this.usuarios[email]);
+    grupo.creador = email;
+    grupo.estado = "abierto"; // abierto, cerrado
+    grupo.privado = esPrivado || false; // Nuevo: grupos privados
+    grupo.solicitudesPendientes = []; // Nuevo: solicitudes de unión
     
-    this.partidas[codigo] = partida;
+    this.grupos[codigo] = grupo;
     
     this.cad.insertarLog({
-      tipoOperacion: "crearPartida",
+      tipoOperacion: "crearGrupo",
       usuario: email,
-      detalles: { codigo: codigo },
+      detalles: { codigo: codigo, nombre: nombreGrupo, privado: esPrivado },
       fechaHora: new Date()
     });
     
-    console.log("Partida creada con código:", codigo);
+    console.log("Grupo creado con código:", codigo, "- Privado:", esPrivado);
     return codigo;
   };
 
-  this.unirAPartida = function(email, codigo) {
+  this.unirseAlGrupo = function(email, codigo, invitado) {
     let usuario = this.usuarios[email];
     if (!usuario) {
       console.log("Usuario no encontrado:", email);
       return { resultado: -1, mensaje: "Usuario no encontrado" };
     }
 
-    let partida = this.partidas[codigo];
-    if (!partida) {
-      console.log("Partida no encontrada:", codigo);
-      return { resultado: -1, mensaje: "Partida no encontrada" };
+    let grupo = this.grupos[codigo];
+    if (!grupo) {
+      console.log("Grupo no encontrado:", codigo);
+      return { resultado: -1, mensaje: "Grupo no encontrado" };
     }
 
-    if (partida.estado === "enCurso") {
-      return { resultado: -1, mensaje: "La partida ya está en curso" };
+    if (grupo.estado === "cerrado") {
+      return { resultado: -1, mensaje: "El grupo está cerrado" };
     }
 
-    if (partida.estado === "finalizada") {
-      return { resultado: -1, mensaje: "La partida ha finalizado" };
+    // Verificar si el grupo es privado y el usuario no fue invitado
+    if (grupo.privado && !invitado) {
+      return { resultado: -1, mensaje: "Este grupo es privado. Necesitas una invitación o puedes solicitar unirte." };
     }
 
-    if (partida.jugadores.length >= partida.maxJug) {
-      console.log("Partida llena");
-      return { resultado: -1, mensaje: "Partida llena" };
-    }
-
-    for (let i = 0; i < partida.jugadores.length; i++) {
-      if (partida.jugadores[i].nick === email) {
-        console.log("El usuario ya está en la partida");
-        return { resultado: -1, mensaje: "Ya estás en esta partida" };
+    // Verificar si ya está en el grupo
+    for (let i = 0; i < grupo.miembros.length; i++) {
+      if (grupo.miembros[i].nick === email) {
+        console.log("El usuario ya está en el grupo");
+        return { resultado: -1, mensaje: "Ya estás en este grupo" };
       }
     }
 
-    partida.jugadores.push(usuario);
+    grupo.miembros.push(usuario);
     
-    if (partida.jugadores.length >= partida.maxJug) {
-      partida.estado = "enCurso";
-      console.log("¡Partida llena! Estado: enCurso");
-    }
+    // Agregar mensaje de sistema
+    let mensajeSistema = {
+      id: Date.now().toString(),
+      autor: "SISTEMA",
+      mensaje: `${email} se ha unido al grupo`,
+      fecha: new Date().toISOString(),
+      tipo: "sistema"
+    };
+    grupo.mensajes.push(mensajeSistema);
     
     this.cad.insertarLog({
-      tipoOperacion: "unirAPartida",
+      tipoOperacion: "unirseAlGrupo",
       usuario: email,
       detalles: { 
         codigo: codigo,
-        nuevoEstado: partida.estado
+        numeroMiembros: grupo.miembros.length
       },
       fechaHora: new Date()
     });
     
-    console.log("Usuario unido a partida:", email, "->", codigo);
+    console.log("Usuario unido a grupo:", email, "->", codigo);
     
     return { 
       resultado: codigo, 
       mensaje: "Unido correctamente",
-      estado: partida.estado
+      estado: grupo.estado,
+      miembros: grupo.miembros.map(m => m.nick),
+      mensajeSistema: mensajeSistema
     };
   };
 
-  this.abandonarPartida = function(email, codigo) {
-    let partida = this.partidas[codigo];
+  this.salirDelGrupo = function(email, codigo) {
+    let grupo = this.grupos[codigo];
     
-    if (!partida) {
-      return { resultado: -1, mensaje: "Partida no encontrada" };
+    if (!grupo) {
+      return { resultado: -1, mensaje: "Grupo no encontrado" };
     }
 
-    let indexJugador = -1;
-    for (let i = 0; i < partida.jugadores.length; i++) {
-      if (partida.jugadores[i].nick === email) {
-        indexJugador = i;
+    let indexMiembro = -1;
+    for (let i = 0; i < grupo.miembros.length; i++) {
+      if (grupo.miembros[i].nick === email) {
+        indexMiembro = i;
         break;
       }
     }
 
-    if (indexJugador === -1) {
-      return { resultado: -1, mensaje: "No estás en esta partida" };
+    if (indexMiembro === -1) {
+      return { resultado: -1, mensaje: "No estás en este grupo" };
     }
 
-    partida.estado = "finalizada";
-    partida.ganador = null;
-    partida.abandonadoPor = email;
+    // Eliminar miembro
+    grupo.miembros.splice(indexMiembro, 1);
+    
+    // Agregar mensaje de sistema
+    let mensajeSistema = {
+      id: Date.now().toString(),
+      autor: "SISTEMA",
+      mensaje: `${email} ha salido del grupo`,
+      fecha: new Date().toISOString(),
+      tipo: "sistema"
+    };
+    grupo.mensajes.push(mensajeSistema);
+    
+    // Si no quedan miembros, cerrar grupo
+    if (grupo.miembros.length === 0) {
+      grupo.estado = "cerrado";
+    } else if (email === grupo.creador) {
+      // Si era el creador pero quedan miembros, asignar nuevo creador
+      grupo.creador = grupo.miembros[0].nick;
+      console.log("Nuevo creador del grupo:", grupo.creador);
+    }
 
     this.cad.insertarLog({
-      tipoOperacion: "abandonarPartida",
+      tipoOperacion: "salirDelGrupo",
       usuario: email,
       detalles: { 
         codigo: codigo,
-        estadoFinal: "finalizada"
+        estadoFinal: grupo.estado,
+        nuevoCreador: grupo.creador
       },
       fechaHora: new Date()
     });
 
-    console.log("Usuario abandonó partida:", email, "->", codigo);
+    console.log("Usuario salió del grupo:", email, "->", codigo);
 
     return { 
       resultado: codigo, 
-      mensaje: "Has abandonado la partida",
-      estado: "finalizada"
+      mensaje: "Has salido del grupo",
+      estado: grupo.estado,
+      nuevoCreador: grupo.creador,
+      miembrosRestantes: grupo.miembros.length,
+      mensajeSistema: mensajeSistema
     };
   };
 
-  this.obtenerPartidasDisponibles = function() {
+  this.enviarMensajeGrupo = function(email, codigo, mensaje) {
+    let grupo = this.grupos[codigo];
+    
+    if (!grupo) {
+      return { resultado: -1, mensaje: "Grupo no encontrado" };
+    }
+
+    // Verificar que el usuario esté en el grupo
+    let esMiembro = grupo.miembros.some(m => m.nick === email);
+    if (!esMiembro) {
+      return { resultado: -1, mensaje: "No eres miembro de este grupo" };
+    }
+
+    let mensajeObj = {
+      id: Date.now().toString(),
+      autor: email,
+      mensaje: mensaje,
+      fecha: new Date().toISOString()
+    };
+
+    grupo.mensajes.push(mensajeObj);
+    
+    // Mantener solo los últimos 100 mensajes en memoria
+    if (grupo.mensajes.length > 100) {
+      grupo.mensajes.shift();
+    }
+
+    return { 
+      resultado: codigo, 
+      mensaje: mensajeObj
+    };
+  };
+
+  this.obtenerMensajesGrupo = function(codigo, limite = 50) {
+    let grupo = this.grupos[codigo];
+    
+    if (!grupo) {
+      return [];
+    }
+
+    // Retornar los últimos N mensajes
+    return grupo.mensajes.slice(-limite);
+  };
+
+  this.obtenerGruposDisponibles = function() {
     let lista = [];
-    for (let codigo in this.partidas) {
-      let partida = this.partidas[codigo];
+    for (let codigo in this.grupos) {
+      let grupo = this.grupos[codigo];
       
       let obj = {
-        codigo: partida.codigo,
-        creador: partida.jugadores[0].nick,
-        numJugadores: partida.jugadores.length,
-        maxJugadores: partida.maxJug,
-        estado: partida.estado
+        codigo: grupo.codigo,
+        nombre: grupo.nombre,
+        creador: grupo.creador,
+        numeroMiembros: grupo.miembros.length,
+        miembros: grupo.miembros.map(m => m.nick),
+        estado: grupo.estado,
+        privado: grupo.privado || false,
+        ultimaActividad: grupo.mensajes.length > 0 
+          ? grupo.mensajes[grupo.mensajes.length - 1].fecha 
+          : grupo.fechaCreacion
       };
-
-      if (partida.estado === "finalizada") {
-        obj.abandonadoPor = partida.abandonadoPor || null;
-      }
 
       lista.push(obj);
     }
     return lista;
   };
 
-  this.obtenerPartidaUsuario = function(email) {
-    for (let codigo in this.partidas) {
-      let partida = this.partidas[codigo];
+  // ==================== INVITACIONES Y SOLICITUDES ====================
+  
+  this.solicitarUnionGrupo = function(email, codigo) {
+    let grupo = this.grupos[codigo];
+    
+    if (!grupo) {
+      return { resultado: -1, mensaje: "Grupo no encontrado" };
+    }
+
+    // Verificar si ya está en el grupo
+    if (grupo.miembros.some(m => m.nick === email)) {
+      return { resultado: -1, mensaje: "Ya estás en este grupo" };
+    }
+
+    // Verificar si ya tiene una solicitud pendiente
+    if (grupo.solicitudesPendientes && grupo.solicitudesPendientes.includes(email)) {
+      return { resultado: -1, mensaje: "Ya tienes una solicitud pendiente en este grupo" };
+    }
+
+    // Añadir a solicitudes pendientes
+    if (!grupo.solicitudesPendientes) {
+      grupo.solicitudesPendientes = [];
+    }
+    grupo.solicitudesPendientes.push(email);
+
+    // Crear mensaje de solicitud en el chat
+    let mensajeSolicitud = {
+      id: Date.now().toString(),
+      autor: "SISTEMA",
+      mensaje: `${email} solicita unirse al grupo`,
+      fecha: new Date().toISOString(),
+      tipo: "solicitud",
+      solicitante: email
+    };
+    grupo.mensajes.push(mensajeSolicitud);
+
+    console.log("Solicitud de unión:", email, "->", codigo);
+
+    return {
+      resultado: codigo,
+      mensaje: "Solicitud enviada correctamente",
+      mensajeSolicitud: mensajeSolicitud
+    };
+  };
+
+  this.responderSolicitud = function(codigoGrupo, solicitante, aprobado, quienResponde) {
+    let grupo = this.grupos[codigoGrupo];
+    
+    if (!grupo) {
+      return { resultado: -1, mensaje: "Grupo no encontrado" };
+    }
+
+    // Verificar que quien responde está en el grupo
+    if (!grupo.miembros.some(m => m.nick === quienResponde)) {
+      return { resultado: -1, mensaje: "No eres miembro de este grupo" };
+    }
+
+    // Verificar que hay una solicitud pendiente
+    if (!grupo.solicitudesPendientes || !grupo.solicitudesPendientes.includes(solicitante)) {
+      return { resultado: -1, mensaje: "No hay solicitud pendiente de este usuario" };
+    }
+
+    // Eliminar de solicitudes pendientes
+    grupo.solicitudesPendientes = grupo.solicitudesPendientes.filter(s => s !== solicitante);
+
+    let mensajeRespuesta;
+
+    if (aprobado) {
+      // Añadir al grupo si fue aprobado
+      let usuario = this.usuarios[solicitante];
+      if (usuario) {
+        grupo.miembros.push(usuario);
+        
+        mensajeRespuesta = {
+          id: Date.now().toString(),
+          autor: "SISTEMA",
+          mensaje: `${solicitante} ha sido aceptado en el grupo por ${quienResponde}`,
+          fecha: new Date().toISOString(),
+          tipo: "sistema"
+        };
+        grupo.mensajes.push(mensajeRespuesta);
+
+        return {
+          resultado: codigoGrupo,
+          aprobado: true,
+          mensaje: "Solicitud aprobada",
+          nuevoMiembro: solicitante,
+          mensajeRespuesta: mensajeRespuesta
+        };
+      }
+    } else {
+      mensajeRespuesta = {
+        id: Date.now().toString(),
+        autor: "SISTEMA",
+        mensaje: `La solicitud de ${solicitante} ha sido rechazada por ${quienResponde}`,
+        fecha: new Date().toISOString(),
+        tipo: "sistema"
+      };
+      grupo.mensajes.push(mensajeRespuesta);
+
+      return {
+        resultado: codigoGrupo,
+        aprobado: false,
+        mensaje: "Solicitud rechazada",
+        mensajeRespuesta: mensajeRespuesta
+      };
+    }
+
+    return { resultado: -1, mensaje: "Error al procesar solicitud" };
+  };
+
+  this.obtenerGrupoUsuario = function(email) {
+    for (let codigo in this.grupos) {
+      let grupo = this.grupos[codigo];
       
-      for (let i = 0; i < partida.jugadores.length; i++) {
-        if (partida.jugadores[i].nick === email) {
+      for (let i = 0; i < grupo.miembros.length; i++) {
+        if (grupo.miembros[i].nick === email) {
           return {
-            codigo: partida.codigo,
-            estado: partida.estado,
-            jugadores: partida.jugadores.map(j => j.nick),
-            abandonadoPor: partida.abandonadoPor || null
+            codigo: grupo.codigo,
+            nombre: grupo.nombre,
+            estado: grupo.estado,
+            miembros: grupo.miembros.map(m => m.nick),
+            creador: grupo.creador,
+            numeroMensajes: grupo.mensajes.length
           };
         }
       }
@@ -314,7 +507,7 @@ function Sistema(test) {
     let codigo;
     do {
       codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
-    } while (this.partidas[codigo]);
+    } while (this.grupos[codigo]);
     
     return codigo;
   };
@@ -324,13 +517,16 @@ function Usuario(nick) {
   this.nick = nick;
 }
 
-function Partida(codigo) {
+function Grupo(codigo, nombre) {
   this.codigo = codigo;
-  this.jugadores = [];
-  this.maxJug = 2;
-  this.estado = "esperando";
-  this.ganador = null;
-  this.abandonadoPor = null;
+  this.nombre = nombre || "Grupo sin nombre";
+  this.miembros = [];
+  this.creador = null;
+  this.estado = "abierto"; // abierto, cerrado
+  this.privado = false; // Nuevo: grupos privados
+  this.solicitudesPendientes = []; // Nuevo: solicitudes de unión
+  this.mensajes = []; // Array de mensajes en memoria
+  this.fechaCreacion = new Date().toISOString();
 }
 
 module.exports.Sistema = Sistema;
